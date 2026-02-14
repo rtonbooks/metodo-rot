@@ -345,7 +345,7 @@
       width: 100%;
     }
 
-    /* ===== HERO CORRIGIDO v16.1 ===== */
+    /* ===== HERO ===== */
     .hero-grid {
       display: grid;
       grid-template-columns: 1.2fr 0.8fr;
@@ -357,7 +357,6 @@
       max-width: 100%;
     }
 
-    /* EFEITO DE TEXTO CORRIGIDO - VOLTANDO AO FUNCIONAL */
     .typing-wrapper {
       margin-bottom: 1rem;
       min-height: 180px;
@@ -581,7 +580,7 @@
       opacity: 0.8;
     }
 
-    /* ===== DEMAIS SEÇÕES ===== */
+    /* ===== SEÇÃO TRUST ===== */
     .trust-section {
       padding: 3rem 2rem;
       background: rgba(10, 15, 26, 0.6);
@@ -616,6 +615,7 @@
       font-size: 0.9rem;
     }
 
+    /* ===== BENEFÍCIOS ===== */
     .benefits-section {
       padding: 6rem 2rem;
     }
@@ -657,6 +657,7 @@
       font-size: 0.95rem;
     }
 
+    /* ===== DEPOIMENTOS ===== */
     .testimonials-section {
       padding: 6rem 2rem;
       background: linear-gradient(180deg, transparent 0%, rgba(10, 15, 26, 0.8) 100%);
@@ -695,6 +696,7 @@
       font-weight: 600;
     }
 
+    /* ===== NÚMEROS ===== */
     .stats-section {
       padding: 4rem 2rem;
     }
@@ -723,6 +725,7 @@
       font-size: 1rem;
     }
 
+    /* ===== PLANOS ===== */
     .pricing-section {
       padding: 6rem 2rem;
     }
@@ -866,6 +869,7 @@
       border-color: var(--accent);
     }
 
+    /* ===== FAQ ===== */
     .faq-section {
       padding: 6rem 2rem;
     }
@@ -897,6 +901,7 @@
       line-height: 1.6;
     }
 
+    /* ===== GARANTIA ===== */
     .guarantee-section {
       padding: 4rem 2rem;
       background: linear-gradient(135deg, rgba(30, 58, 95, 0.3), rgba(201, 110, 58, 0.2));
@@ -924,6 +929,7 @@
       font-size: 1.1rem;
     }
 
+    /* ===== FOOTER ===== */
     .footer {
       background: rgba(10, 15, 26, 0.95);
       padding: 4rem 2rem 2rem;
@@ -997,6 +1003,7 @@
       transform: translateX(5px);
     }
 
+    /* ===== NEWSLETTER FORM ===== */
     .footer-form {
       display: flex;
       flex-direction: column;
@@ -1004,6 +1011,7 @@
     }
 
     .footer-input {
+      width: 100%;
       padding: 0.75rem 1rem;
       border-radius: 8px;
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -1017,6 +1025,10 @@
       outline: none;
       border-color: var(--accent);
       background: rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
     }
 
     .footer-button {
@@ -1051,6 +1063,35 @@
 
     .footer-button:hover::before {
       left: 100%;
+    }
+
+    .footer-button.loading {
+      opacity: 0.7;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .footer-button.loading span {
+      visibility: hidden;
+    }
+
+    .footer-button.loading::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      left: 50%;
+      margin-top: -10px;
+      margin-left: -10px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spinner 0.8s linear infinite;
+    }
+
+    @keyframes spinner {
+      to { transform: rotate(360deg); }
     }
 
     .footer-success {
@@ -1104,6 +1145,7 @@
       transform: translateY(-3px);
     }
 
+    /* ===== SCROLL INDICATOR ===== */
     .scroll-indicator {
       position: fixed;
       bottom: 2rem;
@@ -1146,6 +1188,10 @@
 
       .dynamic-text {
         min-width: 300px;
+      }
+
+      .benefits-grid {
+        grid-template-columns: repeat(2, 1fr);
       }
     }
 
@@ -1306,12 +1352,11 @@
 
   <!-- CONTEÚDO PRINCIPAL -->
   <div class="content-wrapper">
-    <!-- SEÇÃO 3 - HERO CORRIGIDO v16.1 -->
+    <!-- HERO -->
     <section class="section">
       <div class="section-container">
         <div class="hero-grid" data-aos="fade-up">
           <div class="hero-content">
-            <!-- EFEITO DE TEXTO CORRIGIDO -->
             <div class="typing-wrapper">
               <div class="typing-line">
                 <div class="dynamic-text">
@@ -1321,19 +1366,16 @@
               </div>
             </div>
             
-            <!-- DESCRIÇÃO -->
             <p class="hero-description">
               Comece hoje mesmo a construir sua renda na sua casa com o método mais eficiente do mercado. Primeiro saque em até 7 dias!
             </p>
             
-            <!-- FORMULÁRIO -->
             <div class="hero-form">
               <input type="email" class="hero-input" placeholder="Seu e-mail">
               <button class="hero-button">QUERO COMEÇAR</button>
             </div>
           </div>
           
-          <!-- LIVRO -->
           <div class="book-realistic" data-aos="fade-up" data-aos-delay="200">
             <div class="book-3d">
               <div class="book-spine"></div>
@@ -1349,7 +1391,7 @@
       </div>
     </section>
 
-    <!-- SEÇÃO 4 - SELOS DE CONFIANÇA -->
+    <!-- TRUST SECTION -->
     <section class="trust-section" data-aos="fade-up">
       <div class="section-container">
         <div class="trust-grid">
@@ -1377,7 +1419,7 @@
       </div>
     </section>
 
-    <!-- SEÇÃO 5 - BENEFÍCIOS -->
+    <!-- BENEFÍCIOS -->
     <section class="benefits-section" data-aos="fade-up">
       <div class="section-container">
         <h2 class="section-title">O QUE VOCÊ <span>VAI APRENDER</span></h2>
@@ -1418,7 +1460,7 @@
       </div>
     </section>
 
-    <!-- SEÇÃO 6 - DEPOIMENTOS -->
+    <!-- DEPOIMENTOS -->
     <section class="testimonials-section" data-aos="fade-up">
       <div class="section-container">
         <h2 class="section-title">QUEM JÁ <span>TRANSFORMOU A VIDA</span></h2>
@@ -1444,7 +1486,7 @@
       </div>
     </section>
 
-    <!-- SEÇÃO 7 - NÚMEROS -->
+    <!-- NÚMEROS -->
     <section class="stats-section" data-aos="fade-up">
       <div class="section-container">
         <div class="stats-grid">
@@ -1468,7 +1510,7 @@
       </div>
     </section>
 
-    <!-- SEÇÃO 8 - PLANOS -->
+    <!-- PLANOS -->
     <section id="planos" class="pricing-section" data-aos="fade-up">
       <div class="section-container">
         <h2 class="section-title">COMECE SUA <span>JORNADA HOJE</span></h2>
@@ -1503,7 +1545,7 @@
       </div>
     </section>
 
-    <!-- SEÇÃO 9 - FAQ -->
+    <!-- FAQ -->
     <section class="faq-section" data-aos="fade-up">
       <div class="section-container">
         <h2 class="section-title">DÚVIDAS <span>FREQUENTES</span></h2>
@@ -1538,7 +1580,7 @@
       </div>
     </section>
 
-    <!-- SEÇÃO 10 - GARANTIA -->
+    <!-- GARANTIA -->
     <section class="guarantee-section" data-aos="fade-up">
       <div class="section-container">
         <div class="guarantee-badge">
@@ -1549,7 +1591,7 @@
       </div>
     </section>
 
-    <!-- SEÇÃO 11 - FOOTER -->
+    <!-- FOOTER -->
     <footer class="footer" id="contato">
       <div class="footer-container">
         <div class="footer-col">
@@ -1575,7 +1617,9 @@
           <form class="footer-form" id="footerForm">
             <input type="text" class="footer-input" placeholder="Seu nome" required>
             <input type="email" class="footer-input" placeholder="Seu e-mail" required>
-            <button type="submit" class="footer-button">INSCREVER-SE</button>
+            <button type="submit" class="footer-button" id="footerSubmitBtn">
+              <span>INSCREVER-SE</span>
+            </button>
             <div class="footer-success" id="footerSuccess">
               ✓ Obrigado por se inscrever!
             </div>
@@ -1612,18 +1656,17 @@
       easing: 'cubic-bezier(0.23, 1, 0.32, 1)'
     });
 
-    // EFEITO DE ESCRITA CORRIGIDO
     const dynamicText = document.getElementById('dynamicText');
     const phrases = [
       { text: 'GANHE DINHEIRO DE CASA', color: '#c96e3a' },
       { text: 'CONQUISTE SUA LIBERDADE FINANCEIRA', color: '#ffffff' }
     ];
-    
+
     let phraseIndex = 0;
     let charIndex = 0;
     let isDeleting = false;
     let currentText = '';
-    
+
     function typeEffect() {
       const currentPhrase = phrases[phraseIndex].text;
       const currentColor = phrases[phraseIndex].color;
@@ -1651,7 +1694,7 @@
         setTimeout(typeEffect, speed);
       }
     }
-    
+
     typeEffect();
 
     const hamburger = document.getElementById('hamburger');
@@ -1723,18 +1766,111 @@
       bgImage.classList.add('fallback');
     };
 
+    // NEWSLETTER INTEGRATION
     const footerForm = document.getElementById('footerForm');
     const footerSuccess = document.getElementById('footerSuccess');
+    const footerNameInput = document.querySelector('.footer-form input[type="text"]');
+    const footerEmailInput = document.querySelector('.footer-form input[type="email"]');
+    const footerSubmitBtn = document.getElementById('footerSubmitBtn');
 
-    footerForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      footerForm.reset();
+    const KLAVIYO_API_KEY = 'pk_c080c6f116c9ba6c560bf42e85fb6beb9e';
+    const KLAVIYO_LIST_ID = 'SgWFY5';
+    const EMAILJS_SERVICE_ID = 'service_exlkbb4';
+    const EMAILJS_TEMPLATE_ID = 'template_iopksun';
+    const EMAILJS_USER_ID = '-_nuDSym3dppObVtW';
+
+    function showFooterMessage(message) {
+      footerSuccess.textContent = message;
       footerSuccess.classList.add('show');
-      
       setTimeout(() => {
         footerSuccess.classList.remove('show');
-      }, 3000);
-    });
+      }, 5000);
+    }
+
+    async function sendToKlaviyo(name, email) {
+      const data = {
+        profiles: [{
+          email: email,
+          first_name: name.split(' ')[0],
+          last_name: name.split(' ').slice(1).join(' ') || '',
+          $source: 'Site Newsletter'
+        }]
+      };
+
+      try {
+        const response = await fetch(`https://a.klaviyo.com/api/v2/list/${KLAVIYO_LIST_ID}/members?api_key=${KLAVIYO_API_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        return response.ok;
+      } catch (error) {
+        console.error('Erro Klaviyo:', error);
+        return false;
+      }
+    }
+
+    async function sendEmail(name, email) {
+      const templateParams = {
+        name: name,
+        email: email,
+        to_email: email,
+        unsubscribe_link: `https://metodorot.netlify.app/unsubscribe?email=${encodeURIComponent(email)}`
+      };
+
+      try {
+        const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            service_id: EMAILJS_SERVICE_ID,
+            template_id: EMAILJS_TEMPLATE_ID,
+            user_id: EMAILJS_USER_ID,
+            template_params: templateParams
+          })
+        });
+        return response.ok;
+      } catch (error) {
+        console.error('Erro EmailJS:', error);
+        return false;
+      }
+    }
+
+    if (footerForm) {
+      footerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const name = footerNameInput.value.trim();
+        const email = footerEmailInput.value.trim();
+
+        if (!name || !email) {
+          showFooterMessage('Preencha todos os campos!');
+          return;
+        }
+
+        footerSubmitBtn.classList.add('loading');
+        footerSubmitBtn.disabled = true;
+
+        try {
+          const [klaviyoResult, emailResult] = await Promise.all([
+            sendToKlaviyo(name, email),
+            sendEmail(name, email)
+          ]);
+
+          if (klaviyoResult && emailResult) {
+            footerForm.reset();
+            showFooterMessage('✓ Obrigado por se inscrever!');
+          } else {
+            showFooterMessage('✗ Erro ao inscrever. Tente novamente.');
+          }
+        } catch (error) {
+          showFooterMessage('✗ Erro ao inscrever. Tente novamente.');
+        } finally {
+          footerSubmitBtn.classList.remove('loading');
+          footerSubmitBtn.disabled = false;
+        }
+      });
+    }
 
     window.dispatchEvent(new Event('scroll'));
   </script>
