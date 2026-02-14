@@ -1766,46 +1766,51 @@
       bgImage.classList.add('fallback');
     };
 
-    // NEWSLETTER INTEGRATION
+    // ============================================
+    // NEWSLETTER INTEGRATION (VIA FUNÇÃO SERVERLESS)
+    // ============================================
     const footerForm = document.getElementById('footerForm');
     const footerSuccess = document.getElementById('footerSuccess');
     const footerNameInput = document.querySelector('.footer-form input[type="text"]');
     const footerEmailInput = document.querySelector('.footer-form input[type="email"]');
     const footerSubmitBtn = document.getElementById('footerSubmitBtn');
 
-    const KLAVIYO_API_KEY = 'pk_c080c6f116c9ba6c560bf42e85fb6beb9e';
-    const KLAVIYO_LIST_ID = 'SgWFY5';
-    const EMAILJS_SERVICE_ID = 'service_exlkbb4';
-    const EMAILJS_TEMPLATE_ID = 'template_iopksun';
-    const EMAILJS_USER_ID = '-_nuDSym3dppObVtW';
+    const EMAILJS_SERVICE_ID = 'service_xcg8dqm';
+    const EMAILJS_TEMPLATE_ID = 'template_4d70c0f8a11a491aa11acad66b88983e';
+    const EMAILJS_USER_ID = 'user_YKQAXQ0fSn1w9MruI9cUO';
 
-    function showFooterMessage(message) {
+    function showFooterMessage(message, isSuccess = true) {
       footerSuccess.textContent = message;
+      footerSuccess.style.color = isSuccess ? '#48bb78' : '#f56565';
       footerSuccess.classList.add('show');
       setTimeout(() => {
         footerSuccess.classList.remove('show');
       }, 5000);
     }
 
+    // ============================================
+    // FUNÇÃO MODIFICADA - CHAMA NOSSA FUNÇÃO SERVERLESS
+    // ============================================
     async function sendToKlaviyo(name, email) {
-      const data = {
-        profiles: [{
-          email: email,
-          first_name: name.split(' ')[0],
-          last_name: name.split(' ').slice(1).join(' ') || '',
-          $source: 'Site Newsletter'
-        }]
-      };
-
       try {
-        const response = await fetch(`https://a.klaviyo.com/api/v2/list/${KLAVIYO_LIST_ID}/members?api_key=${KLAVIYO_API_KEY}`, {
+        const response = await fetch('/.netlify/functions/klaviyo', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
+          headers: { 
+            'Content-Type': 'application/json' 
+          },
+          body: JSON.stringify({ name, email })
         });
-        return response.ok;
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+          console.error('Erro da função Klaviyo:', data);
+          return false;
+        }
+        
+        return data.success;
       } catch (error) {
-        console.error('Erro Klaviyo:', error);
+        console.error('Erro ao chamar função Klaviyo:', error);
         return false;
       }
     }
@@ -1844,7 +1849,7 @@
         const email = footerEmailInput.value.trim();
 
         if (!name || !email) {
-          showFooterMessage('Preencha todos os campos!');
+          showFooterMessage('Preencha todos os campos!', false);
           return;
         }
 
@@ -1859,12 +1864,13 @@
 
           if (klaviyoResult && emailResult) {
             footerForm.reset();
-            showFooterMessage('✓ Obrigado por se inscrever!');
+            showFooterMessage('✓ Obrigado por se inscrever!', true);
           } else {
-            showFooterMessage('✗ Erro ao inscrever. Tente novamente.');
+            showFooterMessage('✗ Erro ao inscrever. Tente novamente.', false);
           }
         } catch (error) {
-          showFooterMessage('✗ Erro ao inscrever. Tente novamente.');
+          console.error('Erro geral:', error);
+          showFooterMessage('✗ Erro ao inscrever. Tente novamente.', false);
         } finally {
           footerSubmitBtn.classList.remove('loading');
           footerSubmitBtn.disabled = false;
