@@ -1,2 +1,11 @@
-node_modules
-netlify/functions/firebase-key.json
+# Chaves e credenciais
+*.key.json
+firebase-key.json
+*.pem
+*.p8
+*.p12
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.production

@@ -1,2 +1,10 @@
 [build]
-functions = "netlify/functions"
+  functions = "netlify/functions"
+  publish = "."
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["firebase-admin"]
+
+[build.environment]
+  NODE_VERSION = "18"

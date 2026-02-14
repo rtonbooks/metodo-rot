@@ -1,9 +1,1742 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <title>Método RoT</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Método RoT | Renda Online Total</title>
+  
+  <!-- Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- Fontes -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
+  <!-- AOS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  
+  <style>
+    /* ===== VARIÁVEIS ===== */
+    :root {
+      --primary-dark: #0a0f1a;
+      --primary: #1e3a5f;
+      --primary-light: #2e4a75;
+      --accent: #c96e3a;
+      --accent-light: #d88a5e;
+      --accent-glow: rgba(201, 110, 58, 0.3);
+      --gold: #c9a45b;
+      --white: #ffffff;
+      --gray: #94a3b8;
+      --gray-light: #e2e8f0;
+      
+      --font-primary: 'Space Grotesk', sans-serif;
+      --font-roboto: 'Roboto', sans-serif;
+      --transition-smooth: cubic-bezier(0.23, 1, 0.32, 1);
+      --transition-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+      
+      --z-background: -1;
+      --z-content: 1;
+      --z-menu: 100;
+      --z-header: 1000;
+    }
+
+    /* ===== RESET ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background-color: var(--primary-dark);
+      color: var(--white);
+      overflow-x: hidden;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ===== BACKGROUND ===== */
+    .background-fixed {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: var(--z-background);
+      overflow: hidden;
+    }
+
+    .background-image {
+      width: 100%;
+      height: 100%;
+      background-image: url('https://i.postimg.cc/hvMhVQJ9/person-celebrating-with-arm-raised.jpg');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      transform: scale(1.2);
+      transition: transform 0.1s linear;
+      will-change: transform;
+      filter: brightness(0.7) contrast(1.2);
+    }
+
+    .background-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 30% 50%, 
+        rgba(10, 15, 26, 0.9) 0%,
+        rgba(30, 58, 95, 0.7) 50%,
+        rgba(201, 110, 58, 0.4) 100%);
+      pointer-events: none;
+      transition: opacity 0.1s linear;
+      opacity: 0.8;
+    }
+
+    .background-image.fallback {
+      background-image: linear-gradient(135deg, #1e3a5f, #c96e3a) !important;
+      filter: none;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: var(--z-header);
+      padding: 1.5rem 2rem;
+      transition: all 0.3s var(--transition-smooth);
+    }
+
+    .header.scrolled {
+      background-color: rgba(10, 15, 26, 0.95);
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 2rem;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--white);
+      text-decoration: none;
+    }
+
+    .logo-method {
+      color: var(--white);
+    }
+
+    .logo-rot {
+      color: var(--accent);
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 2rem;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.4s var(--transition-smooth);
+    }
+
+    .header.scrolled .nav-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .nav-link {
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      padding: 0.35rem 0;
+      white-space: nowrap;
+    }
+
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 1.5px;
+      background: var(--accent);
+      transition: width 0.3s var(--transition-bounce);
+    }
+
+    .nav-link:hover::before {
+      width: 100%;
+    }
+
+    .social-header {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.4s var(--transition-smooth) 0.1s;
+    }
+
+    .header.scrolled .social-header {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .social-header-link {
+      color: var(--white);
+      font-size: 1.1rem;
+      opacity: 0.7;
+      transition: all 0.3s var(--transition-bounce);
+    }
+
+    .social-header-link:hover {
+      opacity: 1;
+      color: var(--accent);
+      transform: translateY(-3px);
+    }
+
+    .hamburger {
+      width: 42px;
+      height: 42px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(5px);
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: background-color 0.3s ease;
+      margin-left: 1rem;
+    }
+
+    .hamburger:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .hamburger-line {
+      width: 20px;
+      height: 2px;
+      background: var(--white);
+      border-radius: 4px;
+      transition: transform 0.3s var(--transition-bounce);
+    }
+
+    .hamburger.active .hamburger-line:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .hamburger.active .hamburger-line:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.active .hamburger-line:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: rgba(10, 15, 26, 0.98);
+      backdrop-filter: blur(20px);
+      z-index: var(--z-menu);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s var(--transition-smooth),
+                  visibility 0.5s var(--transition-smooth);
+    }
+
+    .menu-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .menu-nav {
+      transform: translateY(30px);
+      transition: transform 0.6s var(--transition-bounce);
+    }
+
+    .menu-overlay.active .menu-nav {
+      transform: translateY(0);
+    }
+
+    .menu-item {
+      margin: 1.5rem 0;
+      text-align: center;
+    }
+
+    .menu-link {
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: var(--white);
+      text-decoration: none;
+      position: relative;
+      padding: 0.3rem 0;
+      letter-spacing: 2px;
+    }
+
+    .menu-link::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 3px;
+      background: var(--accent);
+      transition: width 0.3s var(--transition-bounce);
+    }
+
+    .menu-link:hover::before {
+      width: 100%;
+    }
+
+    /* ===== CONTEÚDO ===== */
+    .content-wrapper {
+      position: relative;
+      z-index: var(--z-content);
+    }
+
+    .section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 6rem 2rem;
+    }
+
+    .section-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ===== HERO CORRIGIDO v16.1 ===== */
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .hero-content {
+      max-width: 100%;
+    }
+
+    /* EFEITO DE TEXTO CORRIGIDO - VOLTANDO AO FUNCIONAL */
+    .typing-wrapper {
+      margin-bottom: 1rem;
+      min-height: 180px;
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .typing-line {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .dynamic-text {
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      font-weight: 700;
+      position: relative;
+      display: inline-block;
+      min-width: 350px;
+      line-height: 1.2;
+      transition: color 0.2s ease;
+    }
+
+    .dynamic-text .cursor {
+      display: inline-block;
+      width: 4px;
+      height: clamp(2.5rem, 8vw, 4rem);
+      background-color: var(--white);
+      margin-left: 4px;
+      animation: blink 0.7s infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .hero-description {
+      font-size: 1.25rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      max-width: 500px;
+      margin-bottom: 2rem;
+    }
+
+    .hero-form {
+      display: flex;
+      gap: 1rem;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .hero-input {
+      flex: 1;
+      min-width: 0;
+      padding: 1rem 1.5rem;
+      border-radius: 100px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(5px);
+      color: var(--white);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .hero-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .hero-button {
+      padding: 1rem 2rem;
+      border-radius: 100px;
+      border: none;
+      background: var(--accent);
+      color: var(--white);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s var(--transition-bounce);
+      white-space: nowrap;
+    }
+
+    .hero-button:hover {
+      background: var(--accent-light);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -5px var(--accent-glow);
+    }
+
+    /* ===== LIVRO ===== */
+    .book-realistic {
+      position: relative;
+      width: 280px;
+      height: 373px;
+      margin: 0 auto;
+      perspective: 2000px;
+      filter: drop-shadow(0 30px 30px rgba(0, 0, 0, 0.5));
+      transform: translateZ(0) !important;
+      backface-visibility: hidden;
+      z-index: 10;
+    }
+
+    .book-3d {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.8s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+      transform: translateZ(0) rotateY(0) rotateX(0) !important;
+    }
+
+    .book-realistic:hover .book-3d {
+      transform: rotateY(-25deg) rotateX(8deg) translateZ(20px) scale(1.05) !important;
+    }
+
+    .book-spine {
+      position: absolute;
+      left: -10px;
+      top: -2px;
+      width: 20px;
+      height: calc(100% + 4px);
+      background: linear-gradient(to right, #0f2638, #1a3347);
+      border-radius: 6px 0 0 6px;
+      transform-origin: right center;
+      transform: rotateY(0deg) translateZ(10px);
+      box-shadow: 
+        inset -3px 0 8px rgba(0, 0, 0, 0.7),
+        inset 0 2px 5px rgba(255, 255, 255, 0.1);
+      z-index: 2;
+      border-left: 2px solid rgba(201, 110, 58, 0.3);
+    }
+
+    .book-spine::before {
+      content: '';
+      position: absolute;
+      top: 15%;
+      left: 4px;
+      width: 3px;
+      height: 70%;
+      background: linear-gradient(to bottom, 
+        rgba(201, 110, 58, 0.3),
+        rgba(255, 255, 255, 0.2),
+        rgba(201, 110, 58, 0.3));
+      border-radius: 2px;
+    }
+
+    .book-pages {
+      position: absolute;
+      left: 14px;
+      top: -2px;
+      width: calc(100% - 22px);
+      height: calc(100% + 4px);
+      background: linear-gradient(to right, #e8e8e8, #d0d0d0);
+      border-radius: 0 10px 10px 0;
+      transform-origin: left center;
+      transform: rotateY(0deg) translateZ(6px) translateX(-3px);
+      z-index: 1;
+      box-shadow: inset -1px 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .book-front {
+      position: absolute;
+      left: 14px;
+      top: -2px;
+      width: calc(100% - 22px);
+      height: calc(100% + 4px);
+      background: #1e3a5f;
+      border-radius: 0 14px 14px 0;
+      box-shadow: 
+        6px 6px 15px rgba(0, 0, 0, 0.6),
+        inset -2px -2px 6px rgba(0, 0, 0, 0.4),
+        inset 2px 2px 6px rgba(255, 255, 255, 0.15);
+      z-index: 3;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      transform-origin: left center;
+      transform: rotateY(0deg) translateZ(10px);
+      border-left: 2px solid rgba(201, 110, 58, 0.4);
+    }
+
+    .book-title-3d {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      text-shadow: 
+        2px 2px 0 rgba(0, 0, 0, 0.5),
+        3px 3px 6px rgba(0, 0, 0, 0.4);
+      z-index: 5;
+      position: relative;
+      white-space: nowrap;
+    }
+
+    .book-subtitle-3d {
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.9);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      z-index: 5;
+      position: relative;
+      line-height: 1.4;
+    }
+
+    .book-shadow {
+      position: absolute;
+      bottom: -20px;
+      left: 5%;
+      width: 90%;
+      height: 30px;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, transparent 80%);
+      filter: blur(12px);
+      z-index: 0;
+      opacity: 0.8;
+    }
+
+    /* ===== DEMAIS SEÇÕES ===== */
+    .trust-section {
+      padding: 3rem 2rem;
+      background: rgba(10, 15, 26, 0.6);
+      backdrop-filter: blur(5px);
+    }
+
+    .trust-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .trust-item {
+      text-align: center;
+    }
+
+    .trust-icon {
+      font-size: 2.5rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .trust-item h4 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .trust-item p {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    .benefits-section {
+      padding: 6rem 2rem;
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .benefit-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s var(--transition-bounce);
+    }
+
+    .benefit-card:hover {
+      transform: translateY(-10px);
+      border-color: var(--accent);
+    }
+
+    .benefit-icon {
+      font-size: 2.5rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .benefit-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .benefit-card p {
+      color: var(--gray);
+      font-size: 0.95rem;
+    }
+
+    .testimonials-section {
+      padding: 6rem 2rem;
+      background: linear-gradient(180deg, transparent 0%, rgba(10, 15, 26, 0.8) 100%);
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .testimonial-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .stars {
+      color: gold;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .testimonial-card p {
+      color: var(--white);
+      font-style: italic;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+
+    .author {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .stats-section {
+      padding: 4rem 2rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      color: var(--gray);
+      font-size: 1rem;
+    }
+
+    .pricing-section {
+      padding: 6rem 2rem;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .section-title span {
+      color: var(--accent);
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: var(--gray);
+      margin-bottom: 3rem;
+      font-size: 1.1rem;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .pricing-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s var(--transition-bounce);
+      display: flex;
+      flex-direction: column;
+      height: 500px;
+      position: relative;
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-10px);
+      border-color: var(--accent);
+      box-shadow: 0 20px 30px -10px var(--accent-glow);
+    }
+
+    .pricing-card.featured {
+      background: linear-gradient(145deg, rgba(30, 58, 95, 0.2), rgba(201, 110, 58, 0.2));
+      border: 2px solid var(--accent);
+    }
+
+    .featured-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: var(--white);
+      padding: 0.25rem 1.5rem;
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .pricing-name {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .pricing-price {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .pricing-price small {
+      font-size: 0.9rem;
+      color: var(--gray);
+      font-weight: 400;
+    }
+
+    .pricing-features {
+      list-style: none;
+      margin-bottom: 2rem;
+      flex-grow: 1;
+    }
+
+    .pricing-features li {
+      padding: 0.6rem 0;
+      color: var(--gray);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 1rem;
+    }
+
+    .pricing-features li:last-child {
+      border-bottom: none;
+    }
+
+    .pricing-features li i {
+      color: var(--accent);
+      min-width: 20px;
+    }
+
+    .bonus-item i {
+      color: gold !important;
+    }
+
+    .pricing-button {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 100px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: transparent;
+      color: var(--white);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s var(--transition-bounce);
+      margin-top: auto;
+    }
+
+    .pricing-button:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .featured .pricing-button {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .faq-section {
+      padding: 6rem 2rem;
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      max-width: 900px;
+      margin: 3rem auto 0;
+    }
+
+    .faq-item {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .faq-item h4 {
+      color: var(--white);
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+
+    .faq-item p {
+      color: var(--gray);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .guarantee-section {
+      padding: 4rem 2rem;
+      background: linear-gradient(135deg, rgba(30, 58, 95, 0.3), rgba(201, 110, 58, 0.2));
+      text-align: center;
+    }
+
+    .guarantee-badge {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .guarantee-badge i {
+      font-size: 4rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .guarantee-badge h3 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .guarantee-badge p {
+      color: var(--gray);
+      font-size: 1.1rem;
+    }
+
+    .footer {
+      background: rgba(10, 15, 26, 0.95);
+      padding: 4rem 2rem 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-col h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--white);
+      position: relative;
+    }
+
+    .footer-col h3::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 40px;
+      height: 2px;
+      background: var(--accent);
+    }
+
+    .footer-col p {
+      color: var(--gray);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .footer-col .contact-email {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--gray);
+      font-size: 0.95rem;
+    }
+
+    .footer-col .contact-email i {
+      color: var(--accent);
+    }
+
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col ul li {
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-col ul li a {
+      color: var(--gray);
+      text-decoration: none;
+      transition: color 0.3s ease;
+      display: inline-block;
+      font-size: 0.95rem;
+    }
+
+    .footer-col ul li a:hover {
+      color: var(--accent);
+      transform: translateX(5px);
+    }
+
+    .footer-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .footer-input {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--white);
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    .footer-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-button {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--white);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s var(--transition-bounce);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .footer-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .footer-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -5px var(--accent-glow);
+    }
+
+    .footer-button:hover::before {
+      left: 100%;
+    }
+
+    .footer-success {
+      color: #48bb78;
+      text-align: center;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .footer-success.show {
+      display: block;
+    }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-bottom p {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .footer-social-link {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      text-decoration: none;
+      transition: all 0.3s var(--transition-bounce);
+    }
+
+    .footer-social-link:hover {
+      background: var(--accent);
+      transform: translateY(-3px);
+    }
+
+    .scroll-indicator {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      cursor: pointer;
+      z-index: var(--z-header);
+      box-shadow: 0 4px 20px var(--accent-glow);
+      transition: all 0.3s var(--transition-bounce);
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .scroll-indicator.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .scroll-indicator:hover {
+      transform: scale(1.1);
+    }
+
+    /* ===== RESPONSIVIDADE ===== */
+    @media (max-width: 1024px) {
+      .hero-grid {
+        gap: 1.5rem;
+      }
+
+      .book-realistic {
+        width: 240px;
+        height: 320px;
+      }
+
+      .dynamic-text {
+        min-width: 300px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header.scrolled .nav-menu,
+      .header.scrolled .social-header {
+        display: none;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .hero-content {
+        margin: 0 auto;
+        text-align: center;
+        max-width: 500px;
+      }
+
+      .typing-wrapper {
+        text-align: center;
+        min-height: 150px;
+      }
+
+      .typing-line {
+        justify-content: center;
+      }
+
+      .dynamic-text {
+        min-width: 280px;
+        font-size: 2rem;
+      }
+
+      .hero-description,
+      .hero-form {
+        margin: 0 auto;
+      }
+
+      .book-realistic {
+        width: 200px;
+        height: 267px;
+      }
+
+      .trust-grid,
+      .stats-grid,
+      .faq-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .benefits-grid,
+      .testimonials-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+      }
+
+      .pricing-card {
+        height: auto;
+        min-height: 480px;
+      }
+
+      .footer-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .trust-grid,
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-form {
+        flex-direction: column;
+      }
+
+      .hero-button {
+        width: 100%;
+      }
+
+      .book-realistic {
+        width: 180px;
+        height: 240px;
+      }
+
+      .book-title-3d {
+        font-size: 1.5rem;
+        letter-spacing: 2px;
+      }
+
+      .book-subtitle-3d {
+        font-size: 0.8rem;
+      }
+
+      .dynamic-text {
+        min-width: 250px;
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+  
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 <body>
-  <h1>Método RoT está online</h1>
+  <!-- BACKGROUND -->
+  <div class="background-fixed">
+    <div class="background-image" id="bgImage"></div>
+    <div class="background-overlay" id="bgOverlay"></div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="header" id="header">
+    <div class="header-container">
+      <a href="#" class="logo">
+        <span class="logo-method">Método</span>
+        <span class="logo-rot">RoT</span>
+      </a>
+      
+      <nav class="nav-menu">
+        <a href="#" class="nav-link">INÍCIO</a>
+        <a href="#planos" class="nav-link">PREÇOS</a>
+        <a href="#contato" class="nav-link">CONTATO</a>
+      </nav>
+      
+      <div class="social-header">
+        <a href="#" class="social-header-link"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="social-header-link"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="social-header-link"><i class="fab fa-tiktok"></i></a>
+      </div>
+      
+      <div class="hamburger" id="hamburger">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MENU OVERLAY -->
+  <div class="menu-overlay" id="menuOverlay">
+    <nav class="menu-nav">
+      <div class="menu-item"><a href="#" class="menu-link">INÍCIO</a></div>
+      <div class="menu-item"><a href="#planos" class="menu-link">PREÇOS</a></div>
+      <div class="menu-item"><a href="#contato" class="menu-link">CONTATO</a></div>
+    </nav>
+  </div>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <div class="content-wrapper">
+    <!-- SEÇÃO 3 - HERO CORRIGIDO v16.1 -->
+    <section class="section">
+      <div class="section-container">
+        <div class="hero-grid" data-aos="fade-up">
+          <div class="hero-content">
+            <!-- EFEITO DE TEXTO CORRIGIDO -->
+            <div class="typing-wrapper">
+              <div class="typing-line">
+                <div class="dynamic-text">
+                  <span class="text" id="dynamicText"></span>
+                  <span class="cursor"></span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- DESCRIÇÃO -->
+            <p class="hero-description">
+              Comece hoje mesmo a construir sua renda na sua casa com o método mais eficiente do mercado. Primeiro saque em até 7 dias!
+            </p>
+            
+            <!-- FORMULÁRIO -->
+            <div class="hero-form">
+              <input type="email" class="hero-input" placeholder="Seu e-mail">
+              <button class="hero-button">QUERO COMEÇAR</button>
+            </div>
+          </div>
+          
+          <!-- LIVRO -->
+          <div class="book-realistic" data-aos="fade-up" data-aos-delay="200">
+            <div class="book-3d">
+              <div class="book-spine"></div>
+              <div class="book-pages"></div>
+              <div class="book-front">
+                <div class="book-title-3d">MÉTODO ROT</div>
+                <div class="book-subtitle-3d">RENDA ONLINE<br>TOTAL 2026</div>
+              </div>
+            </div>
+            <div class="book-shadow"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 4 - SELOS DE CONFIANÇA -->
+    <section class="trust-section" data-aos="fade-up">
+      <div class="section-container">
+        <div class="trust-grid">
+          <div class="trust-item">
+            <div class="trust-icon"><i class="fas fa-shield-alt"></i></div>
+            <h4>7 DIAS DE GARANTIA</h4>
+            <p>Risco zero • Devolução garantida</p>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon"><i class="fas fa-check-circle"></i></div>
+            <h4>+25 PLATAFORMAS</h4>
+            <p>Todas testadas e aprovadas</p>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon"><i class="fas fa-calendar-alt"></i></div>
+            <h4>ATUALIZADO 2026</h4>
+            <p>Materiais fresquinhos</p>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon"><i class="fas fa-users"></i></div>
+            <h4>+2.500 ALUNOS</h4>
+            <p>Resultados comprovados</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 5 - BENEFÍCIOS -->
+    <section class="benefits-section" data-aos="fade-up">
+      <div class="section-container">
+        <h2 class="section-title">O QUE VOCÊ <span>VAI APRENDER</span></h2>
+        <p class="section-subtitle">Conteúdo completo para começar do zero</p>
+        
+        <div class="benefits-grid">
+          <div class="benefit-card">
+            <div class="benefit-icon">📘</div>
+            <h3>+25 Plataformas</h3>
+            <p>Acesso às melhores plataformas testadas em 2026, com links diretos e documentos</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">⚡</div>
+            <h3>Roteiro 7 Dias</h3>
+            <p>Passo a passo para seu primeiro saque em até 7 dias</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">💱</div>
+            <h3>Wise + PayPal</h3>
+            <p>Economize 4% a 6% em cada saque com o método correto</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">🤖</div>
+            <h3>Microtarefas com IA</h3>
+            <p>6 tarefas práticas para começar hoje mesmo</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">📊</div>
+            <h3>Planilhas e Checklists</h3>
+            <p>Materiais práticos para organizar sua rotina</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">🎯</div>
+            <h3>Estratégia 90 Dias</h3>
+            <p>Plano completo para ir do zero à recorrência</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 6 - DEPOIMENTOS -->
+    <section class="testimonials-section" data-aos="fade-up">
+      <div class="section-container">
+        <h2 class="section-title">QUEM JÁ <span>TRANSFORMOU A VIDA</span></h2>
+        <p class="section-subtitle">Resultados reais de alunos do método</p>
+        
+        <div class="testimonials-grid">
+          <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p>"Em 7 dias já tinha feito meu primeiro saque de R$ 87! O roteiro é infalível e muito fácil de seguir."</p>
+            <p class="author">— Ana Silva, SP</p>
+          </div>
+          <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p>"A parte da Wise+PayPal me economizou R$ 300 em taxas no primeiro mês. Vale cada centavo do investimento."</p>
+            <p class="author">— Carlos Eduardo, RJ</p>
+          </div>
+          <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p>"Hoje tiro R$ 1.500 por mês de casa seguindo o método. Melhor decisão que tomei esse ano."</p>
+            <p class="author">— Juliana Mendes, MG</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 7 - NÚMEROS -->
+    <section class="stats-section" data-aos="fade-up">
+      <div class="section-container">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number">+2.500</div>
+            <div class="stat-label">alunos em 2026</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">R$ 87</div>
+            <div class="stat-label">média do 1º saque</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">4%</div>
+            <div class="stat-label">economia em taxas</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">25</div>
+            <div class="stat-label">plataformas testadas</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 8 - PLANOS -->
+    <section id="planos" class="pricing-section" data-aos="fade-up">
+      <div class="section-container">
+        <h2 class="section-title">COMECE SUA <span>JORNADA HOJE</span></h2>
+        <p class="section-subtitle">Escolha o plano ideal para você</p>
+        
+        <div class="pricing-grid">
+          <div class="pricing-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="pricing-name">Standard</div>
+            <div class="pricing-price">R$ 25 <small>/único</small></div>
+            <ul class="pricing-features">
+              <li><i class="fas fa-check"></i> E-book completo</li>
+              <li><i class="fas fa-check"></i> 7 dias de garantia</li>
+              <li><i class="fas fa-check"></i> Suporte por e-mail</li>
+              <li class="bonus-item"><i class="fas fa-star"></i> 1 bônus</li>
+            </ul>
+            <button class="pricing-button">COMPRAR AGORA</button>
+          </div>
+          
+          <div class="pricing-card featured" data-aos="fade-up" data-aos-delay="300">
+            <div class="featured-badge">RECOMENDADO</div>
+            <div class="pricing-name">Plus</div>
+            <div class="pricing-price">R$ 90 <small>/único</small></div>
+            <ul class="pricing-features">
+              <li><i class="fas fa-check"></i> tudo do standard</li>
+              <li><i class="fas fa-check"></i> 30 dias de garantia</li>
+              <li><i class="fas fa-check"></i> suporte por WhatsApp</li>
+              <li class="bonus-item"><i class="fas fa-star"></i> 2 bonus extras</li>
+            </ul>
+            <button class="pricing-button">COMPRAR AGORA</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 9 - FAQ -->
+    <section class="faq-section" data-aos="fade-up">
+      <div class="section-container">
+        <h2 class="section-title">DÚVIDAS <span>FREQUENTES</span></h2>
+        <p class="section-subtitle">Tire suas principais dúvidas sobre o método</p>
+        
+        <div class="faq-grid">
+          <div class="faq-item">
+            <h4>Preciso de experiência?</h4>
+            <p>Não! O ebook é feito para iniciantes absolutos. Começamos do zero, explicando cada plataforma passo a passo.</p>
+          </div>
+          <div class="faq-item">
+            <h4>Quanto posso ganhar no primeiro mês?</h4>
+            <p>Seguindo o roteiro, a média é de R$ 350 a R$ 550 no primeiro mês. Alguns alunos já fizeram R$ 87 em apenas 7 dias!</p>
+          </div>
+          <div class="faq-item">
+            <h4>Preciso de inglês?</h4>
+            <p>Não. Há diversas plataformas em português e tarefas que não exigem conhecimento de inglês. As que exigem, explicamos como usar tradutores.</p>
+          </div>
+          <div class="faq-item">
+            <h4>Como recebo o ebook?</h4>
+            <p>Após a confirmação do pagamento, você recebe um link por e-mail para fazer o download imediato do material.</p>
+          </div>
+          <div class="faq-item">
+            <h4>E se eu não gostar?</h4>
+            <p>Oferecemos garantia incondicional de 7 dias (30 dias no plano Plus). Se não gostar, devolvemos 100% do seu dinheiro.</p>
+          </div>
+          <div class="faq-item">
+            <h4>O plano Plus vale a pena?</h4>
+            <p>Com certeza! Além do suporte prioritário no WhatsApp e 30 dias de garantia, você recebe 2 bônus exclusivos que aceleram seus resultados.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 10 - GARANTIA -->
+    <section class="guarantee-section" data-aos="fade-up">
+      <div class="section-container">
+        <div class="guarantee-badge">
+          <i class="fas fa-shield-alt"></i>
+          <h3>7 DIAS DE GARANTIA</h3>
+          <p>Risco zero • Se não gostar, devolvemos 100% do seu dinheiro</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 11 - FOOTER -->
+    <footer class="footer" id="contato">
+      <div class="footer-container">
+        <div class="footer-col">
+          <h3>Método RoT</h3>
+          <p>O método definitivo para quem quer alcançar a liberdade financeira através de estratégias comprovadas.</p>
+          <div class="contact-email">
+            <i class="fas fa-envelope"></i>
+            <span>contato@metodoRot.com</span>
+          </div>
+        </div>
+        
+        <div class="footer-col">
+          <h3>Links Rápidos</h3>
+          <ul>
+            <li><a href="#">Sobre Nós</a></li>
+            <li><a href="#planos">Preços</a></li>
+            <li><a href="#contato">Contato</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-col">
+          <h3>Newsletter</h3>
+          <form class="footer-form" id="footerForm">
+            <input type="text" class="footer-input" placeholder="Seu nome" required>
+            <input type="email" class="footer-input" placeholder="Seu e-mail" required>
+            <button type="submit" class="footer-button">INSCREVER-SE</button>
+            <div class="footer-success" id="footerSuccess">
+              ✓ Obrigado por se inscrever!
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>© 2026 Método RoT. Todos os direitos reservados.</p>
+        
+        <div class="footer-social">
+          <a href="#" class="footer-social-link"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="footer-social-link"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="footer-social-link"><i class="fab fa-tiktok"></i></a>
+        </div>
+        
+        <p>Rolar ↓</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- SCROLL INDICATOR -->
+  <div class="scroll-indicator" id="scrollIndicator">
+    <i class="fas fa-arrow-down"></i>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 800,
+      once: true,
+      offset: 100,
+      easing: 'cubic-bezier(0.23, 1, 0.32, 1)'
+    });
+
+    // EFEITO DE ESCRITA CORRIGIDO
+    const dynamicText = document.getElementById('dynamicText');
+    const phrases = [
+      { text: 'GANHE DINHEIRO DE CASA', color: '#c96e3a' },
+      { text: 'CONQUISTE SUA LIBERDADE FINANCEIRA', color: '#ffffff' }
+    ];
+    
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let currentText = '';
+    
+    function typeEffect() {
+      const currentPhrase = phrases[phraseIndex].text;
+      const currentColor = phrases[phraseIndex].color;
+      
+      if (isDeleting) {
+        currentText = currentPhrase.substring(0, charIndex - 1);
+        charIndex--;
+      } else {
+        currentText = currentPhrase.substring(0, charIndex + 1);
+        charIndex++;
+      }
+      
+      dynamicText.textContent = currentText;
+      dynamicText.style.color = currentColor;
+      
+      if (!isDeleting && charIndex === currentPhrase.length) {
+        isDeleting = true;
+        setTimeout(typeEffect, 2000);
+      } else if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        phraseIndex = (phraseIndex + 1) % phrases.length;
+        setTimeout(typeEffect, 500);
+      } else {
+        const speed = isDeleting ? 50 : 100;
+        setTimeout(typeEffect, speed);
+      }
+    }
+    
+    typeEffect();
+
+    const hamburger = document.getElementById('hamburger');
+    const menuOverlay = document.getElementById('menuOverlay');
+
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('active');
+      menuOverlay.classList.toggle('active');
+      document.body.style.overflow = menuOverlay.classList.contains('active') ? 'hidden' : '';
+    });
+
+    document.querySelectorAll('.menu-link, .nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('active');
+        menuOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    });
+
+    const header = document.getElementById('header');
+    const bgImage = document.getElementById('bgImage');
+    const bgOverlay = document.getElementById('bgOverlay');
+    const scrollIndicator = document.getElementById('scrollIndicator');
+
+    let ticking = false;
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          const windowHeight = window.innerHeight;
+          const maxScroll = document.documentElement.scrollHeight - windowHeight;
+          const scrollPercent = maxScroll > 0 ? scrollY / maxScroll : 0;
+
+          header.classList.toggle('scrolled', scrollY > 50);
+
+          if (bgImage) {
+            const scale = 1.2 - (scrollPercent * 0.2);
+            bgImage.style.transform = `scale(${Math.max(1.0, Math.min(1.2, scale))})`;
+          }
+
+          if (bgOverlay) {
+            bgOverlay.style.opacity = 0.8 + (scrollPercent * 0.2);
+          }
+
+          scrollIndicator.classList.toggle('hidden', scrollY > windowHeight * 0.3);
+
+          ticking = false;
+        });
+
+        ticking = true;
+      }
+    });
+
+    scrollIndicator.addEventListener('click', () => {
+      window.scrollTo({
+        top: window.innerHeight,
+        behavior: 'smooth'
+      });
+    });
+
+    const img = new Image();
+    img.src = 'https://i.postimg.cc/hvMhVQJ9/person-celebrating-with-arm-raised.jpg';
+    img.onload = () => {
+      console.log('Imagem carregada com sucesso');
+    };
+    img.onerror = () => {
+      console.log('Erro ao carregar imagem, aplicando fallback');
+      bgImage.classList.add('fallback');
+    };
+
+    const footerForm = document.getElementById('footerForm');
+    const footerSuccess = document.getElementById('footerSuccess');
+
+    footerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      footerForm.reset();
+      footerSuccess.classList.add('show');
+      
+      setTimeout(() => {
+        footerSuccess.classList.remove('show');
+      }, 3000);
+    });
+
+    window.dispatchEvent(new Event('scroll'));
+  </script>
 </body>
 </html>
