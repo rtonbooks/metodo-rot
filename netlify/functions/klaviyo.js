@@ -53,11 +53,11 @@ exports.handler = async (event) => {
     }
 
     // ============================================
-    // NOVA API KLAVIYO (2024-10-15)
+    // NOVA API KLAVIYO (2024-10-15) - VERSÃO CORRIGIDA
     // ============================================
     const url = `https://a.klaviyo.com/api/profile-subscription-bulk-create-jobs/`;
 
-    // Formato correto para a nova API
+    // Formato CORRETO para a nova API (sem first_name/last_name)
     const requestBody = {
       data: {
         type: 'profile-subscription-bulk-create-job',
@@ -66,9 +66,8 @@ exports.handler = async (event) => {
             data: [{
               type: 'profile',
               attributes: {
-                email: email,
-                first_name: name.split(' ')[0],
-                last_name: name.split(' ').slice(1).join(' ') || '',
+                email: email
+                // NÃO INCLUIR first_name/last_name AQUI
               }
             }]
           },
@@ -94,7 +93,7 @@ exports.handler = async (event) => {
       headers: {
         'Authorization': `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
         'Content-Type': 'application/json',
-        'revision': '2024-10-15'  // Versão estável da API
+        'revision': '2024-10-15'
       },
       body: JSON.stringify(requestBody)
     });
