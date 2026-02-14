@@ -53,9 +53,8 @@ exports.handler = async (event) => {
     }
 
     // ============================================
-    // ENDPOINT CORRETO PARA ADICIONAR PERFIL À LISTA
+    // TENTAR CRIAR PERFIL (OU OBTER ID SE JÁ EXISTIR)
     // ============================================
-    // Primeiro, criar ou obter o perfil pelo email
     const profileUrl = 'https://a.klaviyo.com/api/profiles/';
     
     const profileData = {
@@ -69,8 +68,10 @@ exports.handler = async (event) => {
       }
     };
 
-    console.log('Criando/atualizando perfil:', JSON.stringify(profileData, null, 2));
+    console.log('Tentando criar/atualizar perfil:', JSON.stringify(profileData, null, 2));
 
+    let profileId = null;
+    
     const profileResponse = await fetch(profileUrl, {
       method: 'POST',
       headers: {
@@ -82,9 +83,21 @@ exports.handler = async (event) => {
     });
 
     const profileResponseData = await profileResponse.json();
-    console.log('Resposta do perfil:', profileResponseData);
+    console.log('Resposta do perfil:', JSON.stringify(profileResponseData, null, 2));
 
-    if (!profileResponse.ok) {
+    if (profileResponse.ok) {
+      // Perfil criado com sucesso
+      profileId = profileResponseData.data.id;
+      console.log('Novo perfil criado com ID:', profileId);
+    } 
+    else if (profileResponse.status === 409) {
+      // Perfil já existe - extrair ID do erro
+      const duplicateProfileId = profileResponseData.errors[0].meta.duplicate_profile_id;
+      profileId = duplicateProfileId;
+      console.log('Perfil já existe. Usando ID existente:', profileId);
+    }
+    else {
+      // Outro erro
       return {
         statusCode: profileResponse.status,
         headers,
@@ -95,50 +108,52 @@ exports.handler = async (event) => {
       };
     }
 
-    // Extrair o ID do perfil criado
-    const profileId = profileResponseData.data.id;
+    // ============================================
+    // VERIFICAR SE O PERFIL JÁ ESTÁ NA LISTA
+    // ============================================
+    if (profileId) {
+      // Adicionar o perfil à lista (se já estiver, a API ignora)
+      const subscriptionUrl = `https://a.klaviyo.com/api/lists/${KLAVIYO_LIST_ID}/relationships/profiles/`;
 
-    // Agora, adicionar o perfil à lista
-    const subscriptionUrl = `https://a.klaviyo.com/api/lists/${KLAVIYO_LIST_ID}/relationships/profiles/`;
-
-    const subscriptionData = {
-      data: [{
-        type: 'profile',
-        id: profileId
-      }]
-    };
-
-    console.log('Adicionando perfil à lista:', JSON.stringify(subscriptionData, null, 2));
-
-    const subscriptionResponse = await fetch(subscriptionUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
-        'Content-Type': 'application/json',
-        'revision': '2024-10-15'
-      },
-      body: JSON.stringify(subscriptionData)
-    });
-
-    const subscriptionResponseData = await subscriptionResponse.text();
-    console.log('Resposta da assinatura:', subscriptionResponseData);
-
-    // Retorna resposta para o frontend
-    if (subscriptionResponse.ok) {
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({ success: true })
+      const subscriptionData = {
+        data: [{
+          type: 'profile',
+          id: profileId
+        }]
       };
-    } else {
-      return {
-        statusCode: subscriptionResponse.status,
-        headers,
-        body: JSON.stringify({ 
-          success: false, 
-          error: subscriptionResponseData 
-        })
-      };
+
+      console.log('Adicionando perfil à lista:', JSON.stringify(subscriptionData, null, 2));
+
+      const subscriptionResponse = await fetch(subscriptionUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
+          'Content-Type': 'application/json',
+          'revision': '2024-10-15'
+        },
+        body: JSON.stringify(subscriptionData)
+      });
+
+      const subscriptionResponseData = await subscriptionResponse.text();
+      console.log('Resposta da assinatura:', subscriptionResponseData);
+
+      if (subscriptionResponse.ok || subscriptionResponse.status === 409) {
+        // 409 também é aceitável (já estava na lista)
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({ success: true })
+        };
+      } else {
+        return {
+          statusCode: subscriptionResponse.status,
+          headers,
+          body: JSON.stringify({ 
+            success: false, 
+            error: subscriptionResponseData 
+          })
+        };
+      }
     }
 
   } catch (error) {
