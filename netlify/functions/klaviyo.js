@@ -53,56 +53,78 @@ exports.handler = async (event) => {
     }
 
     // ============================================
-    // NOVA API KLAVIYO (2024-10-15) - VERSÃO CORRIGIDA
+    // ENDPOINT CORRETO PARA ADICIONAR PERFIL À LISTA
     // ============================================
-    const url = `https://a.klaviyo.com/api/profile-subscription-bulk-create-jobs/`;
-
-    // Formato CORRETO para a nova API (sem first_name/last_name)
-    const requestBody = {
+    // Primeiro, criar ou obter o perfil pelo email
+    const profileUrl = 'https://a.klaviyo.com/api/profiles/';
+    
+    const profileData = {
       data: {
-        type: 'profile-subscription-bulk-create-job',
+        type: 'profile',
         attributes: {
-          profiles: {
-            data: [{
-              type: 'profile',
-              attributes: {
-                email: email
-                // NÃO INCLUIR first_name/last_name AQUI
-              }
-            }]
-          },
-          list_id: KLAVIYO_LIST_ID,
-          subscriptions: {
-            data: [{
-              type: 'subscription',
-              attributes: {
-                channel: 'EMAIL',
-                value: email
-              }
-            }]
-          }
+          email: email,
+          first_name: name.split(' ')[0],
+          last_name: name.split(' ').slice(1).join(' ') || ''
         }
       }
     };
 
-    console.log('Enviando para Klaviyo (nova API):', JSON.stringify(requestBody, null, 2));
+    console.log('Criando/atualizando perfil:', JSON.stringify(profileData, null, 2));
 
-    // Faz a requisição para a nova API
-    const response = await fetch(url, {
+    const profileResponse = await fetch(profileUrl, {
       method: 'POST',
       headers: {
         'Authorization': `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
         'Content-Type': 'application/json',
         'revision': '2024-10-15'
       },
-      body: JSON.stringify(requestBody)
+      body: JSON.stringify(profileData)
     });
 
-    const responseData = await response.text();
-    console.log('Resposta do Klaviyo:', responseData);
+    const profileResponseData = await profileResponse.json();
+    console.log('Resposta do perfil:', profileResponseData);
+
+    if (!profileResponse.ok) {
+      return {
+        statusCode: profileResponse.status,
+        headers,
+        body: JSON.stringify({ 
+          success: false, 
+          error: JSON.stringify(profileResponseData)
+        })
+      };
+    }
+
+    // Extrair o ID do perfil criado
+    const profileId = profileResponseData.data.id;
+
+    // Agora, adicionar o perfil à lista
+    const subscriptionUrl = `https://a.klaviyo.com/api/lists/${KLAVIYO_LIST_ID}/relationships/profiles/`;
+
+    const subscriptionData = {
+      data: [{
+        type: 'profile',
+        id: profileId
+      }]
+    };
+
+    console.log('Adicionando perfil à lista:', JSON.stringify(subscriptionData, null, 2));
+
+    const subscriptionResponse = await fetch(subscriptionUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
+        'Content-Type': 'application/json',
+        'revision': '2024-10-15'
+      },
+      body: JSON.stringify(subscriptionData)
+    });
+
+    const subscriptionResponseData = await subscriptionResponse.text();
+    console.log('Resposta da assinatura:', subscriptionResponseData);
 
     // Retorna resposta para o frontend
-    if (response.ok) {
+    if (subscriptionResponse.ok) {
       return {
         statusCode: 200,
         headers,
@@ -110,11 +132,11 @@ exports.handler = async (event) => {
       };
     } else {
       return {
-        statusCode: response.status,
+        statusCode: subscriptionResponse.status,
         headers,
         body: JSON.stringify({ 
           success: false, 
-          error: responseData 
+          error: subscriptionResponseData 
         })
       };
     }
