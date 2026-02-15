@@ -38,7 +38,7 @@
   
   <style>
     /* ===== BAUNFIRE STANDARDS ===== */
-    /* Version: 3.3 | Author: Baunfire Agency */
+    /* Version: 3.4 | Author: Baunfire Agency */
     /* Last Updated: 2026-02-15 */
     
     /* ===== VARIABLES ===== */
@@ -492,6 +492,10 @@
       outline: none;
       border-color: var(--accent);
       background: rgba(255, 255, 255, 0.1);
+    }
+
+    .hero-input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
     }
 
     .hero-button {
@@ -1360,22 +1364,22 @@
           <h2 class="sr-only" id="trust-title">Diferenciais</h2>
           <div class="trust-grid grid-4">
             <div class="trust-item card">
-              <div class="icon-large"><i class="fas fa-shield-alt"></i></div>
+              <div class="icon-large"><i class="fas fa-shield-alt" aria-hidden="true"></i></div>
               <h4>7 DIAS DE GARANTIA</h4>
               <p>Risco zero • Devolução garantida</p>
             </div>
             <div class="trust-item card">
-              <div class="icon-large"><i class="fas fa-check-circle"></i></div>
+              <div class="icon-large"><i class="fas fa-check-circle" aria-hidden="true"></i></div>
               <h4>+25 PLATAFORMAS</h4>
               <p>Todas testadas e aprovadas</p>
             </div>
             <div class="trust-item card">
-              <div class="icon-large"><i class="fas fa-calendar-alt"></i></div>
+              <div class="icon-large"><i class="fas fa-calendar-alt" aria-hidden="true"></i></div>
               <h4>ATUALIZADO 2026</h4>
               <p>Materiais fresquinhos</p>
             </div>
             <div class="trust-item card">
-              <div class="icon-large"><i class="fas fa-users"></i></div>
+              <div class="icon-large"><i class="fas fa-users" aria-hidden="true"></i></div>
               <h4>+2.500 ALUNOS</h4>
               <p>Resultados comprovados</p>
             </div>
@@ -1391,32 +1395,32 @@
           
           <div class="benefits-grid grid-3">
             <div class="benefit-card card" data-aos="fade-up" data-aos-delay="100">
-              <div class="icon-large">📘</div>
+              <div class="icon-large" aria-hidden="true">📘</div>
               <h3>+25 Plataformas</h3>
               <p>Acesso às melhores plataformas testadas em 2026, com links diretos e documentos.</p>
             </div>
             <div class="benefit-card card" data-aos="fade-up" data-aos-delay="150">
-              <div class="icon-large">⚡</div>
+              <div class="icon-large" aria-hidden="true">⚡</div>
               <h3>Roteiro 7 Dias</h3>
               <p>Passo a passo para seu primeiro saque em até 7 dias, mesmo começando do zero.</p>
             </div>
             <div class="benefit-card card" data-aos="fade-up" data-aos-delay="200">
-              <div class="icon-large">💱</div>
+              <div class="icon-large" aria-hidden="true">💱</div>
               <h3>Wise + PayPal</h3>
               <p>Economize 4% a 6% em cada saque com o método correto de recebimento internacional.</p>
             </div>
             <div class="benefit-card card" data-aos="fade-up" data-aos-delay="250">
-              <div class="icon-large">🤖</div>
+              <div class="icon-large" aria-hidden="true">🤖</div>
               <h3>Microtarefas com IA</h3>
               <p>6 tarefas práticas que você pode começar hoje mesmo usando inteligência artificial.</p>
             </div>
             <div class="benefit-card card" data-aos="fade-up" data-aos-delay="300">
-              <div class="icon-large">📊</div>
+              <div class="icon-large" aria-hidden="true">📊</div>
               <h3>Planilhas e Checklists</h3>
               <p>Materiais práticos para organizar sua rotina e maximizar seus resultados.</p>
             </div>
             <div class="benefit-card card" data-aos="fade-up" data-aos-delay="350">
-              <div class="icon-large">🎯</div>
+              <div class="icon-large" aria-hidden="true">🎯</div>
               <h3>Estratégia 90 Dias</h3>
               <p>Plano completo para ir do zero à recorrência em 3 meses, com metas semanais.</p>
             </div>
@@ -1582,10 +1586,10 @@
             <p>Receba conteúdos exclusivos sobre renda online.</p>
             <form class="footer-form" id="brevoForm">
               <label for="nome" class="sr-only">Seu nome</label>
-              <input type="text" class="footer-input" id="nome" placeholder="Seu nome" required>
+              <input type="text" class="footer-input" id="nome" placeholder="Seu nome" required autocomplete="name">
               
               <label for="email" class="sr-only">Seu e-mail</label>
-              <input type="email" class="footer-input" id="email" placeholder="Seu e-mail" required>
+              <input type="email" class="footer-input" id="email" placeholder="Seu e-mail" required autocomplete="email">
               
               <button type="submit" class="footer-button" id="submitBtn">
                 <span>INSCREVER-SE</span>
@@ -1621,7 +1625,7 @@
   
   <script>
     // ============================================
-    // MÉTODO ROT - MAIN SCRIPT v3.3
+    // MÉTODO ROT - MAIN SCRIPT v3.4
     // ============================================
     
     // AOS INIT
@@ -1740,7 +1744,7 @@
     };
 
     // ============================================
-    // BREVO NEWSLETTER FORM (AJAX)
+    // BREVO NEWSLETTER FORM (AJAX) - CORRIGIDO
     // ============================================
     
     const BREVO_URL = 'https://fa1d7e0d.sibforms.com/serve/MUIFAFTxsSWLXXb0V2K87cJ3tPtTaLtUHUwBBlbCN0KBk9h3leoFWfKOffUqw5fh1_gs0GRfdKXhqFiYuEVbOvv0SAT4Mr5dyUzMpQChTnpNfi-YKEQwEltqqttdALGqQ9gPv38gGlevM7-qXGtAbXjaixGfaScVB7yowHPH7wDOwQlEtyN5AwzMmXQaQjsvLFa3H8Y-OvKaYjGfhQ==';
@@ -1785,6 +1789,7 @@
         const nome = nomeInput?.value.trim() || '';
         const email = emailInput?.value.trim() || '';
 
+        // Validações
         if (!nome || !email) {
           showMessage('Preencha todos os campos!', 'error');
           return;
@@ -1825,7 +1830,7 @@
       });
     }
 
-    console.log('✅ Site v3.3 carregado - Todas as seções ativas');
+    console.log('✅ Site v3.4 carregado - Formulário Brevo corrigido');
   </script>
 </body>
 </html>
