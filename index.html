@@ -37,6 +37,10 @@
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" media="print" onload="this.media='all'">
   
   <style>
+    /* ===== BAUNFIRE STANDARDS ===== */
+    /* Version: 3.3 | Author: Baunfire Agency */
+    /* Last Updated: 2026-02-15 */
+    
     /* ===== VARIABLES ===== */
     :root {
       /* Colors */
@@ -49,11 +53,26 @@
       --gold: #c9a45b;
       --white: #ffffff;
       --gray: #94a3b8;
+      --gray-light: #e2e8f0;
       --success: #48bb78;
+      --success-bg: rgba(72, 187, 120, 0.1);
       --error: #f56565;
+      --error-bg: rgba(245, 101, 101, 0.1);
       
       /* Typography */
       --font-primary: 'Space Grotesk', sans-serif;
+      --font-secondary: 'Roboto', sans-serif;
+      
+      /* Transitions */
+      --transition-smooth: cubic-bezier(0.23, 1, 0.32, 1);
+      --transition-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+      
+      /* Z-index */
+      --z-background: -1;
+      --z-content: 1;
+      --z-menu: 100;
+      --z-header: 1000;
+      --z-modal: 2000;
       
       /* Spacing */
       --space-xs: 0.5rem;
@@ -61,15 +80,9 @@
       --space-md: 1.5rem;
       --space-lg: 2rem;
       --space-xl: 3rem;
-      
-      /* Z-index */
-      --z-background: -1;
-      --z-content: 1;
-      --z-header: 100;
-      --z-menu: 1000;
     }
 
-    /* ===== RESET ===== */
+    /* ===== RESET & BASE ===== */
     * {
       margin: 0;
       padding: 0;
@@ -86,6 +99,68 @@
       color: var(--white);
       overflow-x: hidden;
       line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ===== ACCESSIBILITY ===== */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .focus-visible:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* ===== BACKGROUND ===== */
+    .background-fixed {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: var(--z-background);
+      overflow: hidden;
+    }
+
+    .background-image {
+      width: 100%;
+      height: 100%;
+      background-image: url('https://i.postimg.cc/hvMhVQJ9/person-celebrating-with-arm-raised.jpg');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      transform: scale(1.2);
+      transition: transform 0.1s linear;
+      will-change: transform;
+      filter: brightness(0.7) contrast(1.2);
+    }
+
+    .background-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 30% 50%, 
+        rgba(10, 15, 26, 0.9) 0%,
+        rgba(30, 58, 95, 0.7) 50%,
+        rgba(201, 110, 58, 0.4) 100%);
+      pointer-events: none;
+      transition: opacity 0.1s linear;
+      opacity: 0.8;
+    }
+
+    .background-image.fallback {
+      background-image: linear-gradient(135deg, #1e3a5f, #c96e3a) !important;
+      filter: none;
     }
 
     /* ===== UTILITY CLASSES ===== */
@@ -121,9 +196,23 @@
       font-size: 1.1rem;
     }
 
-    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-lg); }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); }
-    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-lg); }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-lg);
+    }
+    
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-lg);
+    }
+    
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-lg);
+    }
 
     .card {
       background: rgba(255, 255, 255, 0.03);
@@ -131,52 +220,19 @@
       border-radius: 24px;
       padding: var(--space-lg);
       border: 1px solid rgba(255, 255, 255, 0.05);
-      transition: all 0.3s ease;
+      transition: all 0.3s var(--transition-bounce);
     }
 
     .card:hover {
       transform: translateY(-10px);
       border-color: var(--accent);
+      box-shadow: 0 20px 30px -10px var(--accent-glow);
     }
 
     .icon-large {
       font-size: 2.5rem;
       color: var(--accent);
       margin-bottom: var(--space-sm);
-    }
-
-    /* ===== BACKGROUND ===== */
-    .background-fixed {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
-      z-index: var(--z-background);
-      overflow: hidden;
-    }
-
-    .background-image {
-      width: 100%;
-      height: 100%;
-      background-image: url('https://i.postimg.cc/hvMhVQJ9/person-celebrating-with-arm-raised.jpg');
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
-      filter: brightness(0.7) contrast(1.2);
-    }
-
-    .background-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at 30% 50%, 
-        rgba(10, 15, 26, 0.9) 0%,
-        rgba(30, 58, 95, 0.7) 50%,
-        rgba(201, 110, 58, 0.4) 100%);
-      pointer-events: none;
     }
 
     /* ===== HEADER ===== */
@@ -187,7 +243,7 @@
       width: 100%;
       z-index: var(--z-header);
       padding: var(--space-md) var(--space-lg);
-      transition: all 0.3s ease;
+      transition: all 0.3s var(--transition-smooth);
     }
 
     .header.scrolled {
@@ -216,6 +272,7 @@
       z-index: calc(var(--z-menu) + 1);
     }
 
+    .logo-method { color: var(--white); }
     .logo-rot { color: var(--accent); }
 
     .nav-menu {
@@ -242,11 +299,13 @@
       width: 0;
       height: 1.5px;
       background: var(--accent);
-      transition: width 0.3s ease;
+      transition: width 0.3s var(--transition-bounce);
     }
 
-    .nav-link:hover::before { width: 100%; }
-    .nav-link:focus::before { width: 100%; }
+    .nav-link:hover::before,
+    .nav-link:focus::before {
+      width: 100%;
+    }
 
     .social-header {
       display: flex;
@@ -258,7 +317,7 @@
       color: var(--white);
       font-size: 1.1rem;
       opacity: 0.7;
-      transition: all 0.3s ease;
+      transition: all 0.3s var(--transition-bounce);
     }
 
     .social-header-link:hover {
@@ -283,17 +342,29 @@
       z-index: calc(var(--z-menu) + 1);
     }
 
+    .hamburger:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
     .hamburger-line {
       width: 20px;
       height: 2px;
       background: var(--white);
       border-radius: 4px;
-      transition: transform 0.3s ease;
+      transition: transform 0.3s var(--transition-bounce);
     }
 
-    .hamburger.active .hamburger-line:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
-    .hamburger.active .hamburger-line:nth-child(2) { opacity: 0; }
-    .hamburger.active .hamburger-line:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+    .hamburger.active .hamburger-line:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .hamburger.active .hamburger-line:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.active .hamburger-line:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
 
     .menu-overlay {
       position: fixed;
@@ -309,7 +380,7 @@
       justify-content: center;
       opacity: 0;
       visibility: hidden;
-      transition: all 0.5s ease;
+      transition: all 0.5s var(--transition-smooth);
     }
 
     .menu-overlay.active {
@@ -317,10 +388,19 @@
       visibility: visible;
     }
 
-    .menu-nav { transform: translateY(30px); transition: transform 0.6s ease; }
-    .menu-overlay.active .menu-nav { transform: translateY(0); }
+    .menu-nav {
+      transform: translateY(30px);
+      transition: transform 0.6s var(--transition-bounce);
+    }
 
-    .menu-item { margin: var(--space-md) 0; text-align: center; }
+    .menu-overlay.active .menu-nav {
+      transform: translateY(0);
+    }
+
+    .menu-item {
+      margin: var(--space-md) 0;
+      text-align: center;
+    }
 
     .menu-link {
       font-size: 2.2rem;
@@ -340,10 +420,12 @@
       width: 0;
       height: 3px;
       background: var(--accent);
-      transition: width 0.3s ease;
+      transition: width 0.3s var(--transition-bounce);
     }
 
-    .menu-link:hover::before { width: 100%; }
+    .menu-link:hover::before {
+      width: 100%;
+    }
 
     /* ===== HERO ===== */
     .hero-grid {
@@ -353,7 +435,10 @@
       align-items: center;
     }
 
-    .typing-wrapper { min-height: 180px; }
+    .typing-wrapper {
+      margin-bottom: var(--space-md);
+      min-height: 180px;
+    }
 
     .dynamic-text {
       font-size: clamp(2.5rem, 8vw, 4rem);
@@ -372,7 +457,10 @@
       vertical-align: middle;
     }
 
-    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
 
     .hero-description {
       font-size: 1.25rem;
@@ -397,11 +485,13 @@
       backdrop-filter: blur(5px);
       color: var(--white);
       font-size: 1rem;
+      transition: all 0.3s ease;
     }
 
     .hero-input:focus {
       outline: none;
       border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .hero-button {
@@ -412,7 +502,7 @@
       color: var(--white);
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.3s var(--transition-bounce);
       white-space: nowrap;
     }
 
@@ -515,7 +605,7 @@
       left: 5%;
       width: 90%;
       height: 30px;
-      background: radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, transparent 80%);
+      background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.6) 0%, transparent 80%);
       filter: blur(12px);
       opacity: 0.8;
     }
@@ -527,11 +617,35 @@
       padding: var(--space-xl) 0;
     }
 
-    .trust-item { text-align: center; }
+    .trust-item {
+      text-align: center;
+    }
+
+    .trust-item h4 {
+      font-size: 1.2rem;
+      margin-bottom: var(--space-xs);
+    }
+
+    .trust-item p {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
 
     /* ===== BENEFITS SECTION ===== */
-    .benefits-section { padding: var(--space-xl) 0; }
-    .benefits-grid { composes: grid-3; }
+    .benefits-section {
+      padding: var(--space-xl) 0;
+    }
+
+    .benefit-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: var(--space-xs);
+    }
+
+    .benefit-card p {
+      color: var(--gray);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
 
     /* ===== TESTIMONIALS SECTION ===== */
     .testimonials-section {
@@ -539,7 +653,18 @@
       background: linear-gradient(180deg, transparent 0%, rgba(10, 15, 26, 0.8) 100%);
     }
 
-    .stars { color: gold; font-size: 1.2rem; margin-bottom: var(--space-sm); }
+    .stars {
+      color: gold;
+      font-size: 1.2rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .testimonial-card p {
+      color: var(--white);
+      font-style: italic;
+      margin-bottom: var(--space-sm);
+      line-height: 1.6;
+    }
 
     .author {
       color: var(--accent);
@@ -548,24 +673,62 @@
     }
 
     /* ===== STATS SECTION ===== */
-    .stats-section { padding: var(--space-xl) 0; }
-    .stats-grid { composes: grid-4; max-width: 1000px; margin: 0 auto; }
-    .stat-item { text-align: center; }
+    .stats-section {
+      padding: var(--space-xl) 0;
+    }
+
+    .stats-grid {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
     .stat-number {
       font-size: 3rem;
       font-weight: 800;
       color: var(--accent);
       line-height: 1.2;
+      margin-bottom: var(--space-xs);
+    }
+
+    .stat-label {
+      color: var(--gray);
+      font-size: 1rem;
     }
 
     /* ===== PRICING SECTION ===== */
-    .pricing-section { padding: var(--space-xl) 0; }
+    .pricing-section {
+      padding: var(--space-xl) 0;
+    }
+
     .pricing-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: var(--space-lg);
       max-width: 900px;
       margin: 0 auto;
+    }
+
+    .pricing-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: var(--space-lg);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s var(--transition-bounce);
+      display: flex;
+      flex-direction: column;
+      height: 500px;
+      position: relative;
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-10px);
+      border-color: var(--accent);
+      box-shadow: 0 20px 30px -10px var(--accent-glow);
     }
 
     .pricing-card.featured {
@@ -584,6 +747,7 @@
       border-radius: 100px;
       font-size: 0.8rem;
       font-weight: 600;
+      letter-spacing: 1px;
       white-space: nowrap;
     }
 
@@ -591,7 +755,7 @@
       font-size: 2rem;
       font-weight: 700;
       text-align: center;
-      margin-bottom: 0.5rem;
+      margin-bottom: var(--space-xs);
     }
 
     .pricing-price {
@@ -611,6 +775,7 @@
     .pricing-features {
       list-style: none;
       margin-bottom: var(--space-lg);
+      flex-grow: 1;
     }
 
     .pricing-features li {
@@ -622,7 +787,18 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    .pricing-features li i { color: var(--accent); }
+    .pricing-features li:last-child {
+      border-bottom: none;
+    }
+
+    .pricing-features li i {
+      color: var(--accent);
+      min-width: 20px;
+    }
+
+    .bonus-item i {
+      color: gold !important;
+    }
 
     .pricing-button {
       width: 100%;
@@ -633,18 +809,26 @@
       color: var(--white);
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.3s var(--transition-bounce);
+      margin-top: auto;
     }
 
     .pricing-button:hover {
       background: var(--accent);
       border-color: var(--accent);
+      transform: translateY(-2px);
     }
 
-    .featured .pricing-button { background: var(--accent); border-color: var(--accent); }
+    .featured .pricing-button {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
 
     /* ===== FAQ SECTION ===== */
-    .faq-section { padding: var(--space-xl) 0; }
+    .faq-section {
+      padding: var(--space-xl) 0;
+    }
+
     .faq-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -663,9 +847,14 @@
     .faq-item h4 {
       color: var(--white);
       margin-bottom: 0.75rem;
+      font-size: 1.1rem;
     }
 
-    .faq-item p { color: var(--gray); }
+    .faq-item p {
+      color: var(--gray);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
 
     /* ===== GUARANTEE SECTION ===== */
     .guarantee-section {
@@ -674,9 +863,26 @@
       text-align: center;
     }
 
-    .guarantee-badge { max-width: 600px; margin: 0 auto; }
-    .guarantee-badge i { font-size: 4rem; color: var(--accent); margin-bottom: var(--space-sm); }
-    .guarantee-badge h3 { font-size: 2rem; margin-bottom: 0.5rem; }
+    .guarantee-badge {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .guarantee-badge i {
+      font-size: 4rem;
+      color: var(--accent);
+      margin-bottom: var(--space-sm);
+    }
+
+    .guarantee-badge h3 {
+      font-size: 2rem;
+      margin-bottom: var(--space-xs);
+    }
+
+    .guarantee-badge p {
+      color: var(--gray);
+      font-size: 1.1rem;
+    }
 
     /* ===== FOOTER ===== */
     .footer {
@@ -712,32 +918,50 @@
       background: var(--accent);
     }
 
-    .footer-col p,
-    .footer-col ul li a {
+    .footer-col p {
       color: var(--gray);
       line-height: 1.6;
-      text-decoration: none;
-      transition: color 0.3s ease;
+      margin-bottom: var(--space-sm);
+      font-size: 0.95rem;
     }
 
-    .footer-col ul li a:hover { color: var(--accent); }
-    .footer-col ul { list-style: none; }
-    .footer-col ul li { margin-bottom: 0.75rem; }
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col ul li {
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-col ul li a {
+      color: var(--gray);
+      text-decoration: none;
+      transition: color 0.3s ease;
+      font-size: 0.95rem;
+    }
+
+    .footer-col ul li a:hover {
+      color: var(--accent);
+    }
 
     .contact-email {
       display: flex;
       align-items: center;
       gap: 0.5rem;
       color: var(--gray);
+      font-size: 0.95rem;
     }
 
-    .contact-email i { color: var(--accent); }
+    .contact-email i {
+      color: var(--accent);
+    }
 
-    /* ===== FORM ===== */
+    /* ===== NEWSLETTER FORM (ORIGINAL VISUAL) ===== */
     .footer-form {
       display: flex;
       flex-direction: column;
       gap: var(--space-sm);
+      margin-top: var(--space-sm);
     }
 
     .footer-input {
@@ -748,11 +972,17 @@
       background: rgba(255, 255, 255, 0.05);
       color: var(--white);
       font-size: 0.95rem;
+      transition: all 0.3s ease;
     }
 
     .footer-input:focus {
       outline: none;
       border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
     }
 
     .footer-button {
@@ -764,8 +994,9 @@
       color: var(--white);
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.3s var(--transition-bounce);
       position: relative;
+      overflow: hidden;
     }
 
     .footer-button:hover {
@@ -779,7 +1010,9 @@
       pointer-events: none;
     }
 
-    .footer-button.loading span { visibility: hidden; }
+    .footer-button.loading span {
+      visibility: hidden;
+    }
 
     .footer-button.loading::after {
       content: '';
@@ -790,13 +1023,15 @@
       left: 50%;
       margin-top: -10px;
       margin-left: -10px;
-      border: 2px solid rgba(255,255,255,0.3);
+      border: 2px solid rgba(255, 255, 255, 0.3);
       border-top-color: white;
       border-radius: 50%;
       animation: spinner 0.8s linear infinite;
     }
 
-    @keyframes spinner { to { transform: rotate(360deg); } }
+    @keyframes spinner {
+      to { transform: rotate(360deg); }
+    }
 
     .footer-message {
       text-align: center;
@@ -804,17 +1039,26 @@
       padding: 0.5rem;
       border-radius: 6px;
       margin-top: 0.5rem;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s var(--transition-smooth);
       display: none;
     }
 
-    .footer-message.show { display: block; }
+    .footer-message.show {
+      opacity: 1;
+      transform: translateY(0);
+      display: block;
+    }
+
     .footer-message.success {
-      background: rgba(72, 187, 120, 0.1);
+      background: var(--success-bg);
       border: 1px solid rgba(72, 187, 120, 0.3);
       color: var(--success);
     }
+
     .footer-message.error {
-      background: rgba(245, 101, 101, 0.1);
+      background: var(--error-bg);
       border: 1px solid rgba(245, 101, 101, 0.3);
       color: var(--error);
     }
@@ -831,7 +1075,15 @@
       gap: var(--space-sm);
     }
 
-    .footer-social { display: flex; gap: var(--space-sm); }
+    .footer-bottom p {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    .footer-social {
+      display: flex;
+      gap: var(--space-sm);
+    }
 
     .footer-social-link {
       width: 40px;
@@ -843,7 +1095,7 @@
       justify-content: center;
       color: var(--white);
       text-decoration: none;
-      transition: all 0.3s ease;
+      transition: all 0.3s var(--transition-bounce);
     }
 
     .footer-social-link:hover {
@@ -865,9 +1117,9 @@
       justify-content: center;
       color: var(--white);
       cursor: pointer;
-      z-index: 100;
+      z-index: var(--z-header);
       box-shadow: 0 4px 20px var(--accent-glow);
-      transition: all 0.3s ease;
+      transition: all 0.3s var(--transition-bounce);
       border: none;
     }
 
@@ -876,45 +1128,143 @@
       visibility: hidden;
     }
 
-    .scroll-indicator:hover { transform: scale(1.1); }
+    .scroll-indicator:hover {
+      transform: scale(1.1);
+    }
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 1024px) {
-      .grid-4 { grid-template-columns: repeat(2, 1fr); }
-      .hero-grid { gap: var(--space-md); }
-      .book-realistic { width: 240px; height: 320px; }
+      .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .hero-grid {
+        gap: var(--space-md);
+      }
+      .book-realistic {
+        width: 240px;
+        height: 320px;
+      }
+      .dynamic-text {
+        min-width: 300px;
+      }
+      .benefits-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
     @media (max-width: 768px) {
-      .nav-menu,
-      .social-header { display: none; }
-      
-      .hamburger { display: flex; }
-      
-      .hero-grid { grid-template-columns: 1fr; }
-      .hero-content { text-align: center; }
-      .typing-wrapper { min-height: 150px; }
-      .typing-line { justify-content: center; }
-      .dynamic-text { min-width: 280px; font-size: 2rem; }
+      .header.scrolled .nav-menu,
+      .header.scrolled .social-header {
+        display: none;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-lg);
+      }
+
+      .hero-content {
+        text-align: center;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+
+      .typing-wrapper {
+        min-height: 150px;
+      }
+
+      .typing-line {
+        justify-content: center;
+      }
+
+      .dynamic-text {
+        min-width: 280px;
+        font-size: 2rem;
+      }
+
       .hero-description,
-      .hero-form { margin: 0 auto; }
-      .book-realistic { width: 200px; height: 267px; margin-top: var(--space-lg); }
-      
-      .grid-3,
-      .grid-4,
-      .pricing-grid,
-      .faq-grid,
-      .footer-container { grid-template-columns: 1fr; }
-      
-      .footer-bottom { flex-direction: column; text-align: center; }
+      .hero-form {
+        margin: 0 auto;
+      }
+
+      .book-realistic {
+        width: 200px;
+        height: 267px;
+        margin-top: var(--space-lg);
+      }
+
+      .trust-grid,
+      .stats-grid,
+      .faq-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+      }
+
+      .benefits-grid,
+      .testimonials-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+      }
+
+      .pricing-card {
+        height: auto;
+        min-height: 480px;
+      }
+
+      .footer-container {
+        grid-template-columns: 1fr;
+        gap: var(--space-lg);
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
     }
 
     @media (max-width: 480px) {
-      .hero-form { flex-direction: column; }
-      .hero-button { width: 100%; }
-      .book-realistic { width: 180px; height: 240px; }
-      .book-title-3d { font-size: 1.5rem; }
-      .dynamic-text { min-width: 250px; font-size: 1.8rem; }
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-form {
+        flex-direction: column;
+      }
+
+      .hero-button {
+        width: 100%;
+      }
+
+      .book-realistic {
+        width: 180px;
+        height: 240px;
+      }
+
+      .book-title-3d {
+        font-size: 1.5rem;
+        letter-spacing: 2px;
+      }
+
+      .book-subtitle-3d {
+        font-size: 0.8rem;
+      }
+
+      .dynamic-text {
+        min-width: 250px;
+        font-size: 1.8rem;
+      }
+
+      .pricing-card {
+        min-height: 440px;
+      }
     }
   </style>
 </head>
@@ -984,7 +1334,7 @@
               
               <div class="hero-form">
                 <label for="heroEmail" class="sr-only">Seu e-mail</label>
-                <input type="email" class="hero-input" id="heroEmail" placeholder="Seu e-mail" required>
+                <input type="email" class="hero-input" id="heroEmail" placeholder="Seu e-mail">
                 <button class="hero-button" id="heroButton" aria-label="Quero começar">QUERO COMEÇAR</button>
               </div>
             </div>
@@ -1005,28 +1355,28 @@
       </section>
 
       <!-- SEÇÃO 2 - TRUST -->
-      <section class="trust-section" aria-labelledby="trust-title">
+      <section class="trust-section" aria-labelledby="trust-title" data-aos="fade-up">
         <div class="container">
           <h2 class="sr-only" id="trust-title">Diferenciais</h2>
           <div class="trust-grid grid-4">
             <div class="trust-item card">
               <div class="icon-large"><i class="fas fa-shield-alt"></i></div>
-              <h3>7 DIAS DE GARANTIA</h3>
+              <h4>7 DIAS DE GARANTIA</h4>
               <p>Risco zero • Devolução garantida</p>
             </div>
             <div class="trust-item card">
               <div class="icon-large"><i class="fas fa-check-circle"></i></div>
-              <h3>+25 PLATAFORMAS</h3>
+              <h4>+25 PLATAFORMAS</h4>
               <p>Todas testadas e aprovadas</p>
             </div>
             <div class="trust-item card">
               <div class="icon-large"><i class="fas fa-calendar-alt"></i></div>
-              <h3>ATUALIZADO 2026</h3>
+              <h4>ATUALIZADO 2026</h4>
               <p>Materiais fresquinhos</p>
             </div>
             <div class="trust-item card">
               <div class="icon-large"><i class="fas fa-users"></i></div>
-              <h3>+2.500 ALUNOS</h3>
+              <h4>+2.500 ALUNOS</h4>
               <p>Resultados comprovados</p>
             </div>
           </div>
@@ -1034,48 +1384,48 @@
       </section>
 
       <!-- SEÇÃO 3 - BENEFÍCIOS -->
-      <section class="benefits-section" aria-labelledby="benefits-title">
+      <section class="benefits-section" aria-labelledby="benefits-title" data-aos="fade-up">
         <div class="container">
           <h2 class="section-title" id="benefits-title">O QUE VOCÊ <span>VAI APRENDER</span></h2>
           <p class="section-subtitle">Conteúdo completo para começar do zero</p>
           
           <div class="benefits-grid grid-3">
-            <div class="benefit-card card">
+            <div class="benefit-card card" data-aos="fade-up" data-aos-delay="100">
               <div class="icon-large">📘</div>
               <h3>+25 Plataformas</h3>
-              <p>Acesso às melhores plataformas testadas em 2026, com links diretos e documentos</p>
+              <p>Acesso às melhores plataformas testadas em 2026, com links diretos e documentos.</p>
             </div>
-            <div class="benefit-card card">
+            <div class="benefit-card card" data-aos="fade-up" data-aos-delay="150">
               <div class="icon-large">⚡</div>
               <h3>Roteiro 7 Dias</h3>
-              <p>Passo a passo para seu primeiro saque em até 7 dias</p>
+              <p>Passo a passo para seu primeiro saque em até 7 dias, mesmo começando do zero.</p>
             </div>
-            <div class="benefit-card card">
+            <div class="benefit-card card" data-aos="fade-up" data-aos-delay="200">
               <div class="icon-large">💱</div>
               <h3>Wise + PayPal</h3>
-              <p>Economize 4% a 6% em cada saque com o método correto</p>
+              <p>Economize 4% a 6% em cada saque com o método correto de recebimento internacional.</p>
             </div>
-            <div class="benefit-card card">
+            <div class="benefit-card card" data-aos="fade-up" data-aos-delay="250">
               <div class="icon-large">🤖</div>
               <h3>Microtarefas com IA</h3>
-              <p>6 tarefas práticas para começar hoje mesmo</p>
+              <p>6 tarefas práticas que você pode começar hoje mesmo usando inteligência artificial.</p>
             </div>
-            <div class="benefit-card card">
+            <div class="benefit-card card" data-aos="fade-up" data-aos-delay="300">
               <div class="icon-large">📊</div>
               <h3>Planilhas e Checklists</h3>
-              <p>Materiais práticos para organizar sua rotina</p>
+              <p>Materiais práticos para organizar sua rotina e maximizar seus resultados.</p>
             </div>
-            <div class="benefit-card card">
+            <div class="benefit-card card" data-aos="fade-up" data-aos-delay="350">
               <div class="icon-large">🎯</div>
               <h3>Estratégia 90 Dias</h3>
-              <p>Plano completo para ir do zero à recorrência</p>
+              <p>Plano completo para ir do zero à recorrência em 3 meses, com metas semanais.</p>
             </div>
           </div>
         </div>
       </section>
 
       <!-- SEÇÃO 4 - DEPOIMENTOS -->
-      <section class="testimonials-section" aria-labelledby="testimonials-title">
+      <section class="testimonials-section" aria-labelledby="testimonials-title" data-aos="fade-up">
         <div class="container">
           <h2 class="section-title" id="testimonials-title">QUEM JÁ <span>TRANSFORMOU A VIDA</span></h2>
           <p class="section-subtitle">Resultados reais de alunos do método</p>
@@ -1101,10 +1451,10 @@
       </section>
 
       <!-- SEÇÃO 5 - ESTATÍSTICAS -->
-      <section class="stats-section" aria-labelledby="stats-title">
+      <section class="stats-section" aria-labelledby="stats-title" data-aos="fade-up">
         <div class="container">
           <h2 class="sr-only" id="stats-title">Estatísticas</h2>
-          <div class="stats-grid">
+          <div class="stats-grid grid-4">
             <div class="stat-item">
               <div class="stat-number">+2.500</div>
               <div class="stat-label">alunos em 2026</div>
@@ -1126,7 +1476,7 @@
       </section>
 
       <!-- SEÇÃO 6 - PLANOS (PRICING) -->
-      <section id="planos" class="pricing-section" aria-labelledby="pricing-title">
+      <section id="planos" class="pricing-section" aria-labelledby="pricing-title" data-aos="fade-up">
         <div class="container">
           <h2 class="section-title" id="pricing-title">COMECE SUA <span>JORNADA HOJE</span></h2>
           <p class="section-subtitle">Escolha o plano ideal para você</p>
@@ -1139,20 +1489,20 @@
                 <li><i class="fas fa-check" aria-hidden="true"></i> E-book completo</li>
                 <li><i class="fas fa-check" aria-hidden="true"></i> 7 dias de garantia</li>
                 <li><i class="fas fa-check" aria-hidden="true"></i> Suporte por e-mail</li>
-                <li><i class="fas fa-star" style="color: gold;" aria-hidden="true"></i> 1 bônus</li>
+                <li class="bonus-item"><i class="fas fa-star" style="color: gold;" aria-hidden="true"></i> 1 bônus</li>
               </ul>
               <button class="pricing-button" aria-label="Comprar plano Standard R$25">COMPRAR AGORA</button>
             </div>
             
-            <div class="pricing-card card featured" data-aos="fade-up" data-aos-delay="300">
+            <div class="pricing-card featured card" data-aos="fade-up" data-aos-delay="300">
               <div class="featured-badge">RECOMENDADO</div>
               <div class="pricing-name">Plus</div>
               <div class="pricing-price">R$ 90 <small>/único</small></div>
               <ul class="pricing-features">
-                <li><i class="fas fa-check" aria-hidden="true"></i> tudo do standard</li>
+                <li><i class="fas fa-check" aria-hidden="true"></i> Tudo do Standard</li>
                 <li><i class="fas fa-check" aria-hidden="true"></i> 30 dias de garantia</li>
-                <li><i class="fas fa-check" aria-hidden="true"></i> suporte por WhatsApp</li>
-                <li><i class="fas fa-star" style="color: gold;" aria-hidden="true"></i> 2 bonus extras</li>
+                <li><i class="fas fa-check" aria-hidden="true"></i> Suporte por WhatsApp</li>
+                <li class="bonus-item"><i class="fas fa-star" style="color: gold;" aria-hidden="true"></i> 2 bônus extras</li>
               </ul>
               <button class="pricing-button" aria-label="Comprar plano Plus R$90">COMPRAR AGORA</button>
             </div>
@@ -1161,46 +1511,46 @@
       </section>
 
       <!-- SEÇÃO 7 - FAQ -->
-      <section class="faq-section" aria-labelledby="faq-title">
+      <section class="faq-section" aria-labelledby="faq-title" data-aos="fade-up">
         <div class="container">
           <h2 class="section-title" id="faq-title">DÚVIDAS <span>FREQUENTES</span></h2>
           <p class="section-subtitle">Tire suas principais dúvidas sobre o método</p>
           
           <div class="faq-grid">
             <div class="faq-item">
-              <h3>Preciso de experiência?</h3>
+              <h4>Preciso de experiência?</h4>
               <p>Não! O ebook é feito para iniciantes absolutos. Começamos do zero, explicando cada plataforma passo a passo.</p>
             </div>
             <div class="faq-item">
-              <h3>Quanto posso ganhar no primeiro mês?</h3>
+              <h4>Quanto posso ganhar no primeiro mês?</h4>
               <p>Seguindo o roteiro, a média é de R$ 350 a R$ 550 no primeiro mês. Alguns alunos já fizeram R$ 87 em apenas 7 dias!</p>
             </div>
             <div class="faq-item">
-              <h3>Preciso de inglês?</h3>
-              <p>Não. Há diversas plataformas em português e tarefas que não exigem conhecimento de inglês. As que exigem, explicamos como usar tradutores.</p>
+              <h4>Preciso de inglês?</h4>
+              <p>Não. Há diversas plataformas em português e tarefas que não exigem conhecimento de inglês.</p>
             </div>
             <div class="faq-item">
-              <h3>Como recebo o ebook?</h3>
+              <h4>Como recebo o ebook?</h4>
               <p>Após a confirmação do pagamento, você recebe um link por e-mail para fazer o download imediato do material.</p>
             </div>
             <div class="faq-item">
-              <h3>E se eu não gostar?</h3>
+              <h4>E se eu não gostar?</h4>
               <p>Oferecemos garantia incondicional de 7 dias (30 dias no plano Plus). Se não gostar, devolvemos 100% do seu dinheiro.</p>
             </div>
             <div class="faq-item">
-              <h3>O plano Plus vale a pena?</h3>
-              <p>Com certeza! Além do suporte prioritário no WhatsApp e 30 dias de garantia, você recebe 2 bônus exclusivos que aceleram seus resultados.</p>
+              <h4>O plano Plus vale a pena?</h4>
+              <p>Com certeza! Além do suporte prioritário e 30 dias de garantia, você recebe 2 bônus exclusivos.</p>
             </div>
           </div>
         </div>
       </section>
 
       <!-- SEÇÃO 8 - GARANTIA -->
-      <section class="guarantee-section" aria-labelledby="guarantee-title">
+      <section class="guarantee-section" aria-labelledby="guarantee-title" data-aos="fade-up">
         <div class="container">
           <div class="guarantee-badge">
             <i class="fas fa-shield-alt" aria-hidden="true"></i>
-            <h2 id="guarantee-title">7 DIAS DE GARANTIA</h2>
+            <h3 id="guarantee-title">7 DIAS DE GARANTIA</h3>
             <p>Risco zero • Se não gostar, devolvemos 100% do seu dinheiro</p>
           </div>
         </div>
@@ -1214,7 +1564,7 @@
             <p>O método definitivo para quem quer alcançar a liberdade financeira através de estratégias comprovadas.</p>
             <div class="contact-email">
               <i class="fas fa-envelope" aria-hidden="true"></i>
-              <span>contato@metodoRot.com</span>
+              <span>contato@metodorot.com</span>
             </div>
           </div>
           
@@ -1229,18 +1579,19 @@
           
           <div class="footer-col">
             <h3>Newsletter</h3>
-            <form class="footer-form" id="footerForm" novalidate>
-              <label for="footerName" class="sr-only">Seu nome</label>
-              <input type="text" class="footer-input" id="footerName" placeholder="Seu nome" required>
+            <p>Receba conteúdos exclusivos sobre renda online.</p>
+            <form class="footer-form" id="brevoForm">
+              <label for="nome" class="sr-only">Seu nome</label>
+              <input type="text" class="footer-input" id="nome" placeholder="Seu nome" required>
               
-              <label for="footerEmail" class="sr-only">Seu e-mail</label>
-              <input type="email" class="footer-input" id="footerEmail" placeholder="Seu e-mail" required>
+              <label for="email" class="sr-only">Seu e-mail</label>
+              <input type="email" class="footer-input" id="email" placeholder="Seu e-mail" required>
               
-              <button type="submit" class="footer-button" id="footerSubmitBtn" aria-label="Inscrever-se na newsletter">
+              <button type="submit" class="footer-button" id="submitBtn">
                 <span>INSCREVER-SE</span>
               </button>
               
-              <div class="footer-message" id="footerMessage" role="alert" aria-live="polite"></div>
+              <div class="footer-message" id="formMessage"></div>
             </form>
           </div>
         </div>
@@ -1266,278 +1617,215 @@
   </button>
 
   <!-- SCRIPTS -->
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js" defer></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   
-  <script defer>
+  <script>
     // ============================================
-    // APP INIT - v2.3
+    // MÉTODO ROT - MAIN SCRIPT v3.3
     // ============================================
-    (function() {
-      'use strict';
+    
+    // AOS INIT
+    AOS.init({
+      duration: 800,
+      once: true,
+      offset: 100,
+      easing: 'cubic-bezier(0.23, 1, 0.32, 1)'
+    });
 
-      // Config
-      const CONFIG = {
-        emailjs: {
-          publicKey: 'user_YKQAXQ0fSn1w9MruI9cUO',
-          serviceId: 'service_exlkb4',
-          templateId: 'template_iopksun'
-        },
-        klaviyo: {
-          endpoint: '/.netlify/functions/klaviyo'
+    // TYPING EFFECT
+    const dynamicText = document.getElementById('dynamicText');
+    const phrases = [
+      { text: 'GANHE DINHEIRO DE CASA', color: '#c96e3a' },
+      { text: 'CONQUISTE SUA LIBERDADE FINANCEIRA', color: '#ffffff' }
+    ];
+
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let currentText = '';
+
+    function typeEffect() {
+      const currentPhrase = phrases[phraseIndex].text;
+      const currentColor = phrases[phraseIndex].color;
+      
+      if (isDeleting) {
+        currentText = currentPhrase.substring(0, charIndex - 1);
+        charIndex--;
+      } else {
+        currentText = currentPhrase.substring(0, charIndex + 1);
+        charIndex++;
+      }
+      
+      if (dynamicText) {
+        dynamicText.textContent = currentText;
+        dynamicText.style.color = currentColor;
+      }
+      
+      if (!isDeleting && charIndex === currentPhrase.length) {
+        isDeleting = true;
+        setTimeout(typeEffect, 2000);
+      } else if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        phraseIndex = (phraseIndex + 1) % phrases.length;
+        setTimeout(typeEffect, 500);
+      } else {
+        const speed = isDeleting ? 50 : 100;
+        setTimeout(typeEffect, speed);
+      }
+    }
+
+    typeEffect();
+
+    // HEADER SCROLL EFFECT
+    const header = document.getElementById('header');
+    const scrollIndicator = document.getElementById('scrollIndicator');
+    
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      
+      if (header) {
+        header.classList.toggle('scrolled', scrollY > 50);
+      }
+      
+      if (scrollIndicator) {
+        scrollIndicator.classList.toggle('hidden', scrollY > window.innerHeight * 0.3);
+      }
+    });
+
+    // SCROLL INDICATOR CLICK
+    if (scrollIndicator) {
+      scrollIndicator.addEventListener('click', () => {
+        window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+      });
+    }
+
+    // HAMBURGER MENU
+    const hamburger = document.getElementById('hamburger');
+    const menuOverlay = document.getElementById('menuOverlay');
+
+    if (hamburger && menuOverlay) {
+      hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('active');
+        menuOverlay.classList.toggle('active');
+        document.body.style.overflow = menuOverlay.classList.contains('active') ? 'hidden' : '';
+      });
+
+      document.querySelectorAll('.menu-link, .nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+          hamburger.classList.remove('active');
+          menuOverlay.classList.remove('active');
+          document.body.style.overflow = '';
+        });
+      });
+    }
+
+    // HERO BUTTON
+    const heroButton = document.getElementById('heroButton');
+    if (heroButton) {
+      heroButton.addEventListener('click', () => {
+        document.getElementById('contato').scrollIntoView({ behavior: 'smooth' });
+      });
+    }
+
+    // BACKGROUND IMAGE FALLBACK
+    const bgImage = document.getElementById('bgImage');
+    const img = new Image();
+    img.src = 'https://i.postimg.cc/hvMhVQJ9/person-celebrating-with-arm-raised.jpg';
+    img.onload = () => {
+      console.log('✅ Background image loaded');
+    };
+    img.onerror = () => {
+      console.log('⚠️ Background image failed, using fallback');
+      if (bgImage) bgImage.classList.add('fallback');
+    };
+
+    // ============================================
+    // BREVO NEWSLETTER FORM (AJAX)
+    // ============================================
+    
+    const BREVO_URL = 'https://fa1d7e0d.sibforms.com/serve/MUIFAFTxsSWLXXb0V2K87cJ3tPtTaLtUHUwBBlbCN0KBk9h3leoFWfKOffUqw5fh1_gs0GRfdKXhqFiYuEVbOvv0SAT4Mr5dyUzMpQChTnpNfi-YKEQwEltqqttdALGqQ9gPv38gGlevM7-qXGtAbXjaixGfaScVB7yowHPH7wDOwQlEtyN5AwzMmXQaQjsvLFa3H8Y-OvKaYjGfhQ==';
+    
+    const brevoForm = document.getElementById('brevoForm');
+    const nomeInput = document.getElementById('nome');
+    const emailInput = document.getElementById('email');
+    const submitBtn = document.getElementById('submitBtn');
+    const formMessage = document.getElementById('formMessage');
+
+    function showMessage(message, type = 'success') {
+      if (!formMessage) return;
+      
+      formMessage.textContent = message;
+      formMessage.className = `footer-message ${type} show`;
+      
+      setTimeout(() => {
+        formMessage.classList.remove('show');
+      }, 5000);
+    }
+
+    function setLoading(loading) {
+      if (!submitBtn) return;
+      
+      if (loading) {
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+      } else {
+        submitBtn.classList.remove('loading');
+        submitBtn.disabled = false;
+      }
+    }
+
+    function validateEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    if (brevoForm) {
+      brevoForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const nome = nomeInput?.value.trim() || '';
+        const email = emailInput?.value.trim() || '';
+
+        if (!nome || !email) {
+          showMessage('Preencha todos os campos!', 'error');
+          return;
         }
-      };
 
-      // DOM Elements
-      const elements = {
-        header: document.getElementById('header'),
-        hamburger: document.getElementById('hamburger'),
-        menuOverlay: document.getElementById('menuOverlay'),
-        scrollIndicator: document.getElementById('scrollIndicator'),
-        dynamicText: document.getElementById('dynamicText'),
-        footerForm: document.getElementById('footerForm'),
-        footerName: document.getElementById('footerName'),
-        footerEmail: document.getElementById('footerEmail'),
-        footerSubmit: document.getElementById('footerSubmitBtn'),
-        footerMessage: document.getElementById('footerMessage')
-      };
-
-      // ===== TYPING EFFECT =====
-      const typingEffect = {
-        phrases: [
-          { text: 'GANHE DINHEIRO DE CASA', color: '#c96e3a' },
-          { text: 'CONQUISTE SUA LIBERDADE FINANCEIRA', color: '#ffffff' }
-        ],
-        index: 0,
-        char: 0,
-        deleting: false,
-        timeout: null,
-
-        init() {
-          if (!elements.dynamicText) return;
-          this.type();
-        },
-
-        type() {
-          const current = this.phrases[this.index];
-          if (!current) return;
-
-          if (this.deleting) {
-            this.char--;
-          } else {
-            this.char++;
-          }
-
-          elements.dynamicText.textContent = current.text.substring(0, this.char);
-          elements.dynamicText.style.color = current.color;
-
-          if (!this.deleting && this.char === current.text.length) {
-            this.deleting = true;
-            this.timeout = setTimeout(() => this.type(), 2000);
-          } else if (this.deleting && this.char === 0) {
-            this.deleting = false;
-            this.index = (this.index + 1) % this.phrases.length;
-            this.timeout = setTimeout(() => this.type(), 500);
-          } else {
-            const speed = this.deleting ? 50 : 100;
-            this.timeout = setTimeout(() => this.type(), speed);
-          }
-        },
-
-        destroy() {
-          if (this.timeout) clearTimeout(this.timeout);
+        if (!validateEmail(email)) {
+          showMessage('Email inválido!', 'error');
+          return;
         }
-      };
 
-      // ===== HEADER & MENU =====
-      const menuManager = {
-        init() {
-          this.bindEvents();
-        },
+        setLoading(true);
 
-        bindEvents() {
-          // Scroll effect
-          let ticking = false;
-          window.addEventListener('scroll', () => {
-            if (!ticking) {
-              window.requestAnimationFrame(() => {
-                const scrollY = window.scrollY;
-                if (elements.header) {
-                  elements.header.classList.toggle('scrolled', scrollY > 50);
-                }
-                if (elements.scrollIndicator) {
-                  elements.scrollIndicator.classList.toggle('hidden', scrollY > window.innerHeight * 0.3);
-                }
-                ticking = false;
-              });
-              ticking = true;
-            }
+        try {
+          const response = await fetch(BREVO_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+              'NOME': nome,
+              'EMAIL': email,
+              'option': '1'
+            })
           });
 
-          // Menu toggle
-          if (elements.hamburger && elements.menuOverlay) {
-            elements.hamburger.addEventListener('click', () => {
-              const isActive = elements.hamburger.classList.contains('active');
-              
-              if (!isActive) {
-                elements.hamburger.classList.add('active');
-                elements.menuOverlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
-                elements.hamburger.setAttribute('aria-expanded', 'true');
-              } else {
-                this.closeMenu();
-              }
-            });
-
-            // Close on link click
-            document.querySelectorAll('.menu-link, .nav-link').forEach(link => {
-              link.addEventListener('click', () => this.closeMenu());
-            });
-          }
-
-          // Scroll indicator
-          if (elements.scrollIndicator) {
-            elements.scrollIndicator.addEventListener('click', () => {
-              window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
-            });
-          }
-        },
-
-        closeMenu() {
-          if (elements.hamburger && elements.menuOverlay) {
-            elements.hamburger.classList.remove('active');
-            elements.menuOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-            elements.hamburger.setAttribute('aria-expanded', 'false');
-          }
-        }
-      };
-
-      // ===== NEWSLETTER FORM =====
-      const formManager = {
-        init() {
-          if (!elements.footerForm) return;
-          this.bindEvents();
-        },
-
-        bindEvents() {
-          elements.footerForm.addEventListener('submit', (e) => this.handleSubmit(e));
-        },
-
-        showMessage(message, type = 'success') {
-          if (!elements.footerMessage) return;
-          
-          elements.footerMessage.textContent = message;
-          elements.footerMessage.className = `footer-message ${type} show`;
-          
-          setTimeout(() => {
-            elements.footerMessage.classList.remove('show');
-          }, 5000);
-        },
-
-        setLoading(loading) {
-          if (!elements.footerSubmit) return;
-          
-          if (loading) {
-            elements.footerSubmit.classList.add('loading');
-            elements.footerSubmit.disabled = true;
+          if (response.ok || response.status === 200 || response.status === 302) {
+            showMessage('✓ Obrigado! Você foi inscrito com sucesso.', 'success');
+            brevoForm.reset();
           } else {
-            elements.footerSubmit.classList.remove('loading');
-            elements.footerSubmit.disabled = false;
+            throw new Error('Erro no envio');
           }
-        },
-
-        validateEmail(email) {
-          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        },
-
-        async handleSubmit(e) {
-          e.preventDefault();
-
-          const name = elements.footerName?.value.trim() || '';
-          const email = elements.footerEmail?.value.trim() || '';
-
-          if (!name || !email) {
-            this.showMessage('Preencha todos os campos!', 'error');
-            return;
-          }
-
-          if (!this.validateEmail(email)) {
-            this.showMessage('Email inválido!', 'error');
-            return;
-          }
-
-          this.setLoading(true);
-
-          try {
-            // Klaviyo
-            const klaviyoRes = await fetch(CONFIG.klaviyo.endpoint, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ name, email, source: 'footer' })
-            });
-
-            // EmailJS
-            const emailRes = await emailjs.send(
-              CONFIG.emailjs.serviceId,
-              CONFIG.emailjs.templateId,
-              {
-                name,
-                to_email: email,
-                message: `Olá ${name}, seja bem-vindo ao Método RoT!`,
-                site_url: 'https://metodorot.netlify.app'
-              }
-            );
-
-            if (klaviyoRes.ok && emailRes?.status === 200) {
-              this.showMessage('✓ Inscrição realizada com sucesso!', 'success');
-              if (elements.footerForm) elements.footerForm.reset();
-            } else {
-              this.showMessage('✗ Erro ao processar. Tente novamente.', 'error');
-            }
-          } catch (error) {
-            console.error('Form error:', error);
-            this.showMessage('✗ Erro ao processar. Tente novamente.', 'error');
-          } finally {
-            this.setLoading(false);
-          }
+        } catch (error) {
+          console.error('Erro no envio:', error);
+          showMessage('✗ Ops! Algo deu errado. Tente novamente.', 'error');
+        } finally {
+          setLoading(false);
         }
-      };
+      });
+    }
 
-      // ===== INIT =====
-      function init() {
-        // AOS
-        if (window.AOS) {
-          AOS.init({ duration: 800, once: true, offset: 100 });
-        }
-
-        // EmailJS
-        if (window.emailjs) {
-          try {
-            emailjs.init(CONFIG.emailjs.publicKey);
-            console.log('✅ EmailJS ready');
-          } catch (error) {
-            console.error('EmailJS init failed:', error);
-          }
-        }
-
-        // Initialize modules
-        typingEffect.init();
-        menuManager.init();
-        formManager.init();
-
-        // Cleanup
-        window.addEventListener('beforeunload', () => {
-          typingEffect.destroy();
-        });
-      }
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-      } else {
-        init();
-      }
-    })();
+    console.log('✅ Site v3.3 carregado - Todas as seções ativas');
   </script>
 </body>
 </html>
