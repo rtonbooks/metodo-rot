@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidade - Método RoT</title>
+    <meta name="description" content="Política de Privacidade do Método RoT. Saiba como coletamos, usamos e protegemos seus dados pessoais em conformidade com a LGPD.">
+    
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" sizes="32x32" href="https://i.postimg.cc/fJVMvzHf/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://i.postimg.cc/8j7TbpyR/favicon-16x16.png">
+    <link rel="shortcut icon" href="https://i.postimg.cc/2V1CxkHd/favicon.jpg" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://i.postimg.cc/hfXK0DC9/apple-touch-icon.png">
+    
+    <!-- FONTES -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0-beta3/css/all.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #0a0f1a;
+            color: #94a3b8;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+        }
+        
+        .header {
+            background: rgba(10, 15, 26, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(201, 110, 58, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .logo-method { color: white; }
+        .logo-rot { color: #c96e3a; }
+        
+        .back-link {
+            color: #94a3b8;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50px;
+        }
+        
+        .back-link:hover {
+            color: #c96e3a;
+            border-color: #c96e3a;
+        }
+        
+        .content {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .content:hover {
+            border-color: rgba(201, 110, 58, 0.3);
+            box-shadow: 0 20px 30px -10px rgba(201, 110, 58, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+        
+        h1 span {
+            color: #c96e3a;
+        }
+        
+        .last-updated {
+            color: #c96e3a;
+            font-style: italic;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+            margin: 2rem 0 1rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: #c96e3a;
+        }
+        
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #c96e3a;
+            margin: 1.5rem 0 0.5rem;
+        }
+        
+        p {
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+        
+        ul, ol {
+            color: #94a3b8;
+            margin: 1rem 0 1rem 2rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        a {
+            color: #c96e3a;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer {
+            background: rgba(10, 15, 26, 0.95);
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(201, 110, 58, 0.2);
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+        
+        .footer a {
+            color: #94a3b8;
+            margin: 0 0.5rem;
+        }
+        
+        .footer a:hover {
+            color: #c96e3a;
+        }
+        
+        .footer-social {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .footer-social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-social-link:hover {
+            background: #c96e3a;
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .contact-email {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #94a3b8;
+            margin-top: 1rem;
+        }
+        
+        .contact-email i {
+            color: #c96e3a;
+        }
+        
+        .contact-email a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .contact-email a:hover {
+            color: #c96e3a;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .content {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-method">Método</span>
+                <span class="logo-rot">RoT</span>
+            </a>
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="content">
+            <h1>Política de <span>Privacidade</span></h1>
+            <p class="last-updated">Última atualização: 16 de fevereiro de 2026</p>
+            
+            <p>A sua privacidade é importante para nós. Esta Política de Privacidade explica como o Método RoT coleta, usa, compartilha e protege as informações pessoais dos usuários do nosso site e serviços, em conformidade com a Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018).</p>
+            
+            <h2>1. Quem somos</h2>
+            <p>Método RoT é um projeto de educação digital que oferece conteúdo sobre renda online. Nosso site está disponível em <a href="https://metodorot.netlify.app">https://metodorot.netlify.app</a> e nosso contato para assuntos relacionados à privacidade é:</p>
+            <div class="contact-email" id="contact-privacidade"></div>
+            
+            <h2>2. Dados que coletamos</h2>
+            <p>Coletamos as seguintes informações pessoais:</p>
+            <h3>2.1 Informações fornecidas diretamente por você</h3>
+            <ul>
+                <li><strong>Nome completo:</strong> quando você se inscreve na nossa newsletter</li>
+                <li><strong>Endereço de e-mail:</strong> quando você se inscreve na newsletter ou entra em contato conosco</li>
+            </ul>
+            
+            <h3>2.2 Informações coletadas automaticamente</h3>
+            <ul>
+                <li><strong>Dados de navegação:</strong> endereço IP, tipo de navegador, páginas visitadas, data e hora do acesso</li>
+                <li><strong>Cookies:</strong> utilizamos cookies do Google Analytics para entender como você interage com nosso site</li>
+            </ul>
+            
+            <h2>3. Finalidade do tratamento dos dados</h2>
+            <p>Utilizamos seus dados para:</p>
+            <ul>
+                <li><strong>Enviar newsletter:</strong> com conteúdos, dicas e ofertas sobre renda online (mediante seu consentimento)</li>
+                <li><strong>Melhorar o site:</strong> analisar o comportamento dos usuários para otimizar a experiência</li>
+                <li><strong>Responder a contatos:</strong> atender dúvidas, solicitações e reclamações enviadas por e-mail</li>
+                <li><strong>Cumprir obrigações legais:</strong> quando exigido por lei</li>
+            </ul>
+            
+            <h2>4. Compartilhamento de dados</h2>
+            <p>Compartilhamos seus dados apenas com:</p>
+            <ul>
+                <li><strong>Brevo (antigo Sendinblue):</strong> plataforma de envio de e-mails. Os dados são armazenados nos servidores da Brevo, que seguem rigorosos padrões de segurança. <a href="https://www.brevo.com/legal/privacypolicy/" target="_blank">Política de Privacidade da Brevo</a></li>
+                <li><strong>Google Analytics:</strong> ferramenta de análise de tráfego. Os dados são anonimizados e usados apenas para estatísticas. <a href="https://policies.google.com/privacy" target="_blank">Política de Privacidade do Google</a></li>
+            </ul>
+            <p>Não vendemos, alugamos ou comercializamos seus dados pessoais com terceiros não autorizados.</p>
+            
+            <h2>5. Armazenamento e segurança</h2>
+            <p>Seus dados são armazenados em servidores seguros (Brevo) com criptografia e acesso restrito. Adotamos medidas técnicas e organizacionais para proteger suas informações contra acesso não autorizado, perda ou destruição.</p>
+            
+            <h2>6. Seus direitos (LGPD)</h2>
+            <p>De acordo com a LGPD, você tem direito a:</p>
+            <ol>
+                <li><strong>Confirmação e acesso:</strong> saber se tratamos seus dados e acessá-los</li>
+                <li><strong>Correção:</strong> corrigir dados incompletos, inexatos ou desatualizados</li>
+                <li><strong>Anonimização, bloqueio ou eliminação:</strong> solicitar a eliminação de dados desnecessários ou tratados em desconformidade com a lei</li>
+                <li><strong>Portabilidade:</strong> solicitar a transferência dos dados para outro fornecedor</li>
+                <li><strong>Eliminação:</strong> pedir a exclusão dos dados tratados com seu consentimento</li>
+                <li><strong>Informação sobre compartilhamento:</strong> saber com quem compartilhamos seus dados</li>
+                <li><strong>Revogação do consentimento:</strong> retirar seu consentimento a qualquer momento</li>
+            </ol>
+            <p>Para exercer seus direitos, envie um e-mail para o nosso canal de contato.</p>
+            
+            <h2>7. Cookies</h2>
+            <p>Utilizamos cookies do Google Analytics para coletar informações anônimas sobre como você usa nosso site. Você pode desativar os cookies nas configurações do seu navegador, mas isso pode afetar a funcionalidade do site.</p>
+            
+            <h2>8. Alterações nesta política</h2>
+            <p>Podemos atualizar esta Política de Privacidade periodicamente. A versão mais recente estará sempre disponível nesta página, com a data de atualização no topo. Recomendamos que você revise esta página regularmente.</p>
+            
+            <h2>9. Contato</h2>
+            <p>Se tiver dúvidas sobre esta Política de Privacidade ou sobre como tratamos seus dados, entre em contato:</p>
+            <div class="contact-email" id="contact-privacidade-footer"></div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <p>© 2026 Método RoT. Todos os direitos reservados.</p>
+        <div class="footer-social">
+            <a href="https://www.tiktok.com/@rotbooks" class="footer-social-link" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+            <a href="https://www.instagram.com/rotbooks/" class="footer-social-link" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://facebook.com/rotbooks" class="footer-social-link" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        </div>
+        <div class="footer-links">
+            <a href="privacidade.html">Privacidade</a> |
+            <a href="termos.html">Termos</a> |
+            <a href="sobre.html">Sobre</a> |
+            <a href="index.html">Home</a>
+        </div>
+    </footer>
+    
+    <script>
+        // Email masking
+        (function() {
+            const realUser = 'rtonbooks';
+            const realDomain = 'gmail.com';
+            const realEmail = realUser + '@' + realDomain;
+            
+            const displayUser = 'contato';
+            const displayDomain = 'metodorot.com';
+            const displayEmail = displayUser + '@' + displayDomain;
+            
+            document.querySelectorAll('[id^="contact-"]').forEach(container => {
+                if (container) {
+                    container.innerHTML = `
+                        <i class="fas fa-envelope" aria-hidden="true"></i>
+                        <a href="mailto:${realEmail}">
+                            ${displayEmail}
+                        </a>
+                    `;
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
