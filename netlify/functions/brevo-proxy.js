@@ -1,4 +1,3 @@
-// netlify/functions/brevo-proxy.js
 const BREVO_URL = 'https://fa1d7e0d.sibforms.com/serve/MUIFAFTxsSWLXXb0V2K87cJ3tPtTaLtUHUwBBlbCN0KBk9h3leoFWfKOffUqw5fh1_gs0GRfdKXhqFiYuEVbOvv0SAT4Mr5dyUzMpQChTnpNfi-YKEQwEltqqttdALGqQ9gPv38gGlevM7-qXGtAbXjaixGfaScVB7yowHPH7wDOwQlEtyN5AwzMmXQaQjsvLFa3H8Y-OvKaYjGfhQ==';
 
 exports.handler = async (event) => {
