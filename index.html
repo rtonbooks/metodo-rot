@@ -52,7 +52,7 @@
   
   <style>
     /* ===== BAUNFIRE STANDARDS ===== */
-    /* Version: 4.6 | Author: Baunfire Agency */
+    /* Version: 4.7 | Author: Baunfire Agency */
     /* Last Updated: 2026-02-16 */
     
     /* ===== VARIABLES ===== */
@@ -1650,7 +1650,7 @@
   
   <script>
     // ============================================
-    // MÉTODO ROT - MAIN SCRIPT v4.6
+    // MÉTODO ROT - MAIN SCRIPT v4.7
     // ============================================
     
     // EMAIL MASKING - contato@metodorot.com (exibido) → rtonbooks@gmail.com (real)
@@ -1790,7 +1790,7 @@
     };
 
     // ============================================
-    // BREVO NEWSLETTER FORM (AJAX) - VERSÃO CORRIGIDA (JSON)
+    // BREVO NEWSLETTER FORM (AJAX) - VERSÃO CORRIGIDA (JSON) - LISTA ID 5
     // ============================================
     
     const BREVO_URL = 'https://fa1d7e0d.sibforms.com/serve/MUIFAFTxsSWLXXb0V2K87cJ3tPtTaLtUHUwBBlbCN0KBk9h3leoFWfKOffUqw5fh1_gs0GRfdKXhqFiYuEVbOvv0SAT4Mr5dyUzMpQChTnpNfi-YKEQwEltqqttdALGqQ9gPv38gGlevM7-qXGtAbXjaixGfaScVB7yowHPH7wDOwQlEtyN5AwzMmXQaQjsvLFa3H8Y-OvKaYjGfhQ==';
@@ -1854,7 +1854,7 @@
         try {
           console.log('5️⃣ Antes do fetch, URL:', BREVO_URL);
           
-          // CORREÇÃO: Usando formato JSON da API do Brevo
+          // CORREÇÃO: Usando formato JSON da API do Brevo com LISTA ID 5
           const response = await fetch(BREVO_URL, {
             method: 'POST',
             headers: {
@@ -1867,7 +1867,7 @@
                 NOME: nome,
                 FIRSTNAME: nome
               },
-              listIds: [2]  // ← ID da lista como array de números
+              listIds: [5]  // ← NOVO ID DA LISTA!
             })
           });
           
@@ -1892,7 +1892,7 @@
       });
     }
 
-    console.log('✅ Site v4.6 carregado - API Brevo corrigida (formato JSON)');
+    console.log('✅ Site v4.7 carregado - API Brevo JSON - Lista ID 5');
   </script>
 </body>
 </html>
