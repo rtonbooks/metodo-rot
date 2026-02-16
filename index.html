@@ -55,10 +55,9 @@
   
   <style>
     /* ===== BAUNFIRE STANDARDS ===== */
-    /* Version: 5.0 | Author: Baunfire Agency */
+    /* Version: 5.1 | Author: Baunfire Agency */
     /* Last Updated: 2026-02-16 */
     
-    /* ===== VARIABLES ===== */
     :root {
       --primary-dark: #0a0f1a;
       --primary: #1e3a5f;
@@ -98,7 +97,6 @@
       --space-xl: 3rem;
     }
 
-    /* ===== RESET & BASE ===== */
     * {
       margin: 0;
       padding: 0;
@@ -118,7 +116,6 @@
       min-height: 100vh;
     }
 
-    /* ===== ACCESSIBILITY ===== */
     .sr-only {
       position: absolute;
       width: 1px;
@@ -128,11 +125,6 @@
       overflow: hidden;
       clip: rect(0, 0, 0, 0);
       border: 0;
-    }
-
-    .focus-visible:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
     }
 
     /* ===== BACKGROUND ===== */
@@ -179,7 +171,6 @@
       filter: none;
     }
 
-    /* ===== UTILITY CLASSES ===== */
     .container {
       max-width: 1200px;
       margin: 0 auto;
@@ -988,7 +979,7 @@
       color: var(--accent);
     }
 
-    /* ===== NEWSLETTER FORM - AJAX COM VISUAL UNIFORME ===== */
+    /* ===== NEWSLETTER FORM - AJAX COM PROXY ===== */
     .footer-form {
       display: flex;
       flex-direction: column;
@@ -1678,7 +1669,7 @@
   
   <script>
     // ============================================
-    // MÉTODO ROT - MAIN SCRIPT v5.0 (AJAX UNIFORME)
+    // MÉTODO ROT - MAIN SCRIPT v5.1 (AJAX + PROXY)
     // ============================================
     
     // EMAIL MASKING - contato@metodorot.com (exibido) → rtonbooks@gmail.com (real)
@@ -1818,11 +1809,11 @@
     };
 
     // ============================================
-    // BREVO NEWSLETTER FORM - AJAX COM CAPTCHA
+    // BREVO NEWSLETTER FORM - AJAX COM PROXY
     // ============================================
     
-    // CONFIGURAÇÕES
-    const BREVO_URL = 'https://fa1d7e0d.sibforms.com/serve/MUIFAFTxsSWLXXb0V2K87cJ3tPtTaLtUHUwBBlbCN0KBk9h3leoFWfKOffUqw5fh1_gs0GRfdKXhqFiYuEVbOvv0SAT4Mr5dyUzMpQChTnpNfi-YKEQwEltqqttdALGqQ9gPv38gGlevM7-qXGtAbXjaixGfaScVB7yowHPH7wDOwQlEtyN5AwzMmXQaQjsvLFa3H8Y-OvKaYjGfhQ==';
+    // URL do proxy (NÃO é mais a URL direta do Brevo)
+    const PROXY_URL = '/.netlify/functions/brevo-proxy';
     const LIST_ID = 5; // ID da lista
     
     // ELEMENTOS DO FORMULÁRIO
@@ -1913,13 +1904,12 @@
         console.log('4️⃣ Loading ativado');
 
         try {
-          console.log('5️⃣ Antes do fetch');
+          console.log('5️⃣ Enviando para o proxy');
           
-          const response = await fetch(BREVO_URL, {
+          const response = await fetch(PROXY_URL, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Accept': 'application/json'
             },
             body: JSON.stringify({
               email: email,
@@ -1932,30 +1922,27 @@
             })
           });
           
-          console.log('6️⃣ Depois do fetch, status:', response.status);
+          console.log('6️⃣ Resposta do proxy, status:', response.status);
 
-          if (response.ok || response.status === 200 || response.status === 201) {
-            console.log('7️⃣ Resposta OK');
-            showMessage('✓ Obrigado! Você foi inscrito com sucesso.', 'success');
-            brevoForm.reset();
+          if (response.ok) {
+            const data = await response.json();
+            console.log('7️⃣ Proxy respondeu:', data);
             
-            // Reset captcha
-            if (captchaWidgetId) {
-              grecaptcha.reset(captchaWidgetId);
+            if (data.success) {
+              showMessage('✓ Obrigado! Você foi inscrito com sucesso.', 'success');
+              brevoForm.reset();
+              if (captchaWidgetId) grecaptcha.reset(captchaWidgetId);
+            } else {
+              throw new Error('Erro no servidor');
             }
           } else {
-            const errorText = await response.text();
-            console.log('7️⃣ Resposta não OK, status:', response.status, 'Detalhes:', errorText);
-            throw new Error('Erro no envio: ' + errorText);
+            throw new Error(`Erro HTTP: ${response.status}`);
           }
         } catch (error) {
           console.error('8️⃣ Erro capturado:', error);
           showMessage('✗ Ops! Algo deu errado. Tente novamente.', 'error');
           
-          // Reset captcha em caso de erro
-          if (captchaWidgetId) {
-            grecaptcha.reset(captchaWidgetId);
-          }
+          if (captchaWidgetId) grecaptcha.reset(captchaWidgetId);
         } finally {
           console.log('9️⃣ Finally: removendo loading');
           setLoading(false);
@@ -1963,7 +1950,7 @@
       });
     }
 
-    console.log('✅ Site v5.0 carregado - AJAX com visual uniforme');
+    console.log('✅ Site v5.1 carregado - AJAX com proxy (CORB resolvido)');
   </script>
 </body>
 </html>
