@@ -52,12 +52,11 @@
   
   <style>
     /* ===== BAUNFIRE STANDARDS ===== */
-    /* Version: 4.3 | Author: Baunfire Agency */
+    /* Version: 4.6 | Author: Baunfire Agency */
     /* Last Updated: 2026-02-16 */
     
     /* ===== VARIABLES ===== */
     :root {
-      /* Colors */
       --primary-dark: #0a0f1a;
       --primary: #1e3a5f;
       --primary-light: #2e4a75;
@@ -962,7 +961,7 @@
       color: var(--accent);
     }
 
-    /* ===== NOVA SEÇÃO DE CONTATO COM MÁSCARA DE EMAIL ===== */
+    /* ===== CONTATO COM MÁSCARA DE EMAIL ===== */
     .contact-email {
       display: flex;
       align-items: center;
@@ -1319,10 +1318,11 @@
         <a href="#contato" class="nav-link">CONTATO</a>
       </nav>
       
+      <!-- REDES SOCIAIS NO HEADER -->
       <div class="social-header">
-        <a href="#" class="social-header-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-        <a href="#" class="social-header-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-        <a href="#" class="social-header-link" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+        <a href="https://www.tiktok.com/@rotbooks" class="social-header-link" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+        <a href="https://www.instagram.com/rotbooks/" class="social-header-link" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://facebook.com/rotbooks" class="social-header-link" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
       </div>
       
       <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
@@ -1627,10 +1627,11 @@
         <div class="footer-bottom">
           <p>© 2026 Método RoT. Todos os direitos reservados.</p>
           
+          <!-- REDES SOCIAIS NO FOOTER -->
           <div class="footer-social">
-            <a href="#" class="footer-social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" class="footer-social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="footer-social-link" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+            <a href="https://www.tiktok.com/@rotbooks" class="footer-social-link" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+            <a href="https://www.instagram.com/rotbooks/" class="footer-social-link" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://facebook.com/rotbooks" class="footer-social-link" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
           </div>
           
           <p>Rolar ↓</p>
@@ -1649,7 +1650,7 @@
   
   <script>
     // ============================================
-    // MÉTODO ROT - MAIN SCRIPT v4.3
+    // MÉTODO ROT - MAIN SCRIPT v4.6
     // ============================================
     
     // EMAIL MASKING - contato@metodorot.com (exibido) → rtonbooks@gmail.com (real)
@@ -1789,7 +1790,7 @@
     };
 
     // ============================================
-    // BREVO NEWSLETTER FORM (AJAX) - VERSÃO COM DIAGNÓSTICO
+    // BREVO NEWSLETTER FORM (AJAX) - VERSÃO CORRIGIDA (JSON)
     // ============================================
     
     const BREVO_URL = 'https://fa1d7e0d.sibforms.com/serve/MUIFAFTxsSWLXXb0V2K87cJ3tPtTaLtUHUwBBlbCN0KBk9h3leoFWfKOffUqw5fh1_gs0GRfdKXhqFiYuEVbOvv0SAT4Mr5dyUzMpQChTnpNfi-YKEQwEltqqttdALGqQ9gPv38gGlevM7-qXGtAbXjaixGfaScVB7yowHPH7wDOwQlEtyN5AwzMmXQaQjsvLFa3H8Y-OvKaYjGfhQ==';
@@ -1853,27 +1854,33 @@
         try {
           console.log('5️⃣ Antes do fetch, URL:', BREVO_URL);
           
+          // CORREÇÃO: Usando formato JSON da API do Brevo
           const response = await fetch(BREVO_URL, {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
             },
-            body: new URLSearchParams({
-              'NOME': nome,
-              'EMAIL': email,
-              'option': '1'
+            body: JSON.stringify({
+              email: email,
+              attributes: {
+                NOME: nome,
+                FIRSTNAME: nome
+              },
+              listIds: [2]  // ← ID da lista como array de números
             })
           });
           
           console.log('6️⃣ Depois do fetch, status:', response.status);
 
-          if (response.ok || response.status === 200 || response.status === 302) {
+          if (response.ok || response.status === 200 || response.status === 201) {
             console.log('7️⃣ Resposta OK');
             showMessage('✓ Obrigado! Você foi inscrito com sucesso.', 'success');
             brevoForm.reset();
           } else {
-            console.log('7️⃣ Resposta não OK, status:', response.status);
-            throw new Error('Erro no envio');
+            const errorText = await response.text();
+            console.log('7️⃣ Resposta não OK, status:', response.status, 'Detalhes:', errorText);
+            throw new Error('Erro no envio: ' + errorText);
           }
         } catch (error) {
           console.error('8️⃣ Erro capturado:', error);
@@ -1885,7 +1892,7 @@
       });
     }
 
-    console.log('✅ Site v4.3 carregado - Email masking ativo: contato@metodorot.com');
+    console.log('✅ Site v4.6 carregado - API Brevo corrigida (formato JSON)');
   </script>
 </body>
 </html>

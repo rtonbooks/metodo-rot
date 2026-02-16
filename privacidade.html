@@ -42,7 +42,6 @@
             flex: 1;
         }
         
-        /* Header */
         .header {
             background: rgba(10, 15, 26, 0.95);
             backdrop-filter: blur(12px);
@@ -91,7 +90,6 @@
             border-color: #c96e3a;
         }
         
-        /* Conteúdo principal */
         .content {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(10px);
@@ -175,7 +173,6 @@
             text-decoration: underline;
         }
         
-        /* Footer */
         .footer {
             background: rgba(10, 15, 26, 0.95);
             padding: 2rem;
@@ -195,11 +192,32 @@
             color: #c96e3a;
         }
         
-        .footer-links {
-            margin-top: 1rem;
+        .footer-social {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
         }
         
-        /* Contact container */
+        .footer-social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-social-link:hover {
+            background: #c96e3a;
+            color: white;
+            transform: translateY(-3px);
+        }
+        
         .contact-email {
             display: flex;
             align-items: center;
@@ -320,6 +338,11 @@
     
     <footer class="footer">
         <p>© 2026 Método RoT. Todos os direitos reservados.</p>
+        <div class="footer-social">
+            <a href="https://www.tiktok.com/@rotbooks" class="footer-social-link" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+            <a href="https://www.instagram.com/rotbooks/" class="footer-social-link" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://facebook.com/rotbooks" class="footer-social-link" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        </div>
         <div class="footer-links">
             <a href="privacidade.html">Privacidade</a> |
             <a href="termos.html">Termos</a> |
@@ -329,7 +352,7 @@
     </footer>
     
     <script>
-        // Email masking para todas as páginas
+        // Email masking
         (function() {
             const realUser = 'rtonbooks';
             const realDomain = 'gmail.com';
@@ -339,7 +362,6 @@
             const displayDomain = 'metodorot.com';
             const displayEmail = displayUser + '@' + displayDomain;
             
-            // Para todos os elementos com id começando com 'contact-'
             document.querySelectorAll('[id^="contact-"]').forEach(container => {
                 if (container) {
                     container.innerHTML = `
