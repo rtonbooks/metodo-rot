@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre Nós - Método RoT</title>
+    <meta name="description" content="Conheça a história do Método RoT, nossa missão e como podemos ajudar você a conquistar sua renda online.">
+    
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" sizes="32x32" href="https://i.postimg.cc/fJVMvzHf/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://i.postimg.cc/8j7TbpyR/favicon-16x16.png">
+    <link rel="shortcut icon" href="https://i.postimg.cc/2V1CxkHd/favicon.jpg" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://i.postimg.cc/hfXK0DC9/apple-touch-icon.png">
+    
+    <!-- FONTES -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0-beta3/css/all.css">
+    
+    <style>
+        /* MESMO CSS DAS PÁGINAS ANTERIORES */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #0a0f1a;
+            color: #94a3b8;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+        }
+        
+        .header {
+            background: rgba(10, 15, 26, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(201, 110, 58, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .logo-method { color: white; }
+        .logo-rot { color: #c96e3a; }
+        
+        .back-link {
+            color: #94a3b8;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50px;
+        }
+        
+        .back-link:hover {
+            color: #c96e3a;
+            border-color: #c96e3a;
+        }
+        
+        .content {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .content:hover {
+            border-color: rgba(201, 110, 58, 0.3);
+            box-shadow: 0 20px 30px -10px rgba(201, 110, 58, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+        
+        h1 span {
+            color: #c96e3a;
+        }
+        
+        .mission-box {
+            background: rgba(201, 110, 58, 0.1);
+            border: 1px solid rgba(201, 110, 58, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .mission-box h2 {
+            color: #c96e3a;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .mission-box p {
+            color: white;
+            font-size: 1.2rem;
+            font-style: italic;
+        }
+        
+        .stats-mini {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat-mini-item {
+            text-align: center;
+            background: rgba(255,255,255,0.03);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .stat-mini-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #c96e3a;
+        }
+        
+        .stat-mini-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+            margin: 2rem 0 1rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: #c96e3a;
+        }
+        
+        p {
+            color: #94a3b8;
+            margin-bottom: 1rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        ul {
+            list-style: none;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        li {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            position: relative;
+            color: #94a3b8;
+        }
+        
+        li::before {
+            content: '✓';
+            color: #c96e3a;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        
+        .contact-email {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #94a3b8;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(201,110,58,0.3);
+            border-radius: 50px;
+        }
+        
+        .contact-email i {
+            color: #c96e3a;
+        }
+        
+        .contact-email a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .contact-email a:hover {
+            color: #c96e3a;
+        }
+        
+        .footer {
+            background: rgba(10, 15, 26, 0.95);
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(201, 110, 58, 0.2);
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+        
+        .footer a {
+            color: #94a3b8;
+            margin: 0 0.5rem;
+        }
+        
+        .footer a:hover {
+            color: #c96e3a;
+        }
+        
+        .footer-links {
+            margin-top: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .content {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .stats-mini {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-method">Método</span>
+                <span class="logo-rot">RoT</span>
+            </a>
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="content">
+            <h1>Sobre o <span>Método RoT</span></h1>
+            
+            <p style="font-size: 1.2rem; margin-bottom: 2rem;">Transformando vidas através da renda online desde 2025.</p>
+            
+            <div class="mission-box">
+                <h2>Nossa Missão</h2>
+                <p>Democratizar o acesso à informação de qualidade sobre renda online, capacitando pessoas a conquistarem sua independência financeira de forma ética e sustentável.</p>
+            </div>
+            
+            <div class="stats-mini">
+                <div class="stat-mini-item">
+                    <div class="stat-mini-number">+2.500</div>
+                    <div class="stat-mini-label">alunos</div>
+                </div>
+                <div class="stat-mini-item">
+                    <div class="stat-mini-number">25</div>
+                    <div class="stat-mini-label">plataformas</div>
+                </div>
+                <div class="stat-mini-item">
+                    <div class="stat-mini-number">R$87</div>
+                    <div class="stat-mini-label">média 1º saque</div>
+                </div>
+            </div>
+            
+            <h2>Nossa História</h2>
+            <p>O Método RoT nasceu da necessidade de oferecer um caminho claro e estruturado para quem deseja começar a ganhar dinheiro online, mas não sabe por onde começar. Percebemos que a internet estava cheia de informações soltas, cursos caros e promessas milagrosas. Queríamos algo diferente: um método passo a passo, testado, atualizado e acessível.</p>
+            <p>Começamos em 2025 com um pequeno grupo de alunos e, desde então, já ajudamos mais de 2.500 pessoas a realizarem seu primeiro saque online. Nosso compromisso é com a transparência, a ética e a eficácia.</p>
+            
+            <h2>Por que "RoT"?</h2>
+            <p>RoT significa <strong>Renda Online Total</strong>. Acreditamos que a renda online pode ser uma fonte de renda complementar ou principal, proporcionando liberdade geográfica e financeira. Total também se refere à abrangência do nosso método, que cobre desde as primeiras tarefas até estratégias avançadas.</p>
+            
+            <h2>Nossos Valores</h2>
+            <ul>
+                <li><strong>Transparência:</strong> Mostramos exatamente o que fazer, sem segredos.</li>
+                <li><strong>Ética:</strong> Divulgamos apenas práticas legais e honestas.</li>
+                <li><strong>Atualização:</strong> Nosso material é revisado constantemente.</li>
+                <li><strong>Suporte:</strong> Estamos aqui para ajudar você em cada etapa.</li>
+            </ul>
+            
+            <h2>Contato</h2>
+            <p>Ficou com alguma dúvida? Quer saber mais sobre o método?</p>
+            <div class="contact-email" id="contact-sobre"></div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <p>© 2026 Método RoT. Todos os direitos reservados.</p>
+        <div class="footer-links">
+            <a href="privacidade.html">Privacidade</a> |
+            <a href="termos.html">Termos</a> |
+            <a href="sobre.html">Sobre</a> |
+            <a href="index.html">Home</a>
+        </div>
+    </footer>
+    
+    <script>
+        // Email masking
+        (function() {
+            const realUser = 'rtonbooks';
+            const realDomain = 'gmail.com';
+            const realEmail = realUser + '@' + realDomain;
+            
+            const displayUser = 'contato';
+            const displayDomain = 'metodorot.com';
+            const displayEmail = displayUser + '@' + displayDomain;
+            
+            document.querySelectorAll('[id^="contact-"]').forEach(container => {
+                if (container) {
+                    container.innerHTML = `
+                        <i class="fas fa-envelope" aria-hidden="true"></i>
+                        <a href="mailto:${realEmail}">
+                            ${displayEmail}
+                        </a>
+                    `;
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

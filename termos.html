@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termos de Uso - Método RoT</title>
+    <meta name="description" content="Termos e condições de uso do site e produtos Método RoT. Leia sobre regras de uso, pagamentos, reembolsos e propriedade intelectual.">
+    
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" sizes="32x32" href="https://i.postimg.cc/fJVMvzHf/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://i.postimg.cc/8j7TbpyR/favicon-16x16.png">
+    <link rel="shortcut icon" href="https://i.postimg.cc/2V1CxkHd/favicon.jpg" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://i.postimg.cc/hfXK0DC9/apple-touch-icon.png">
+    
+    <!-- FONTES -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0-beta3/css/all.css">
+    
+    <style>
+        /* MESMO CSS DA PÁGINA DE PRIVACIDADE */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #0a0f1a;
+            color: #94a3b8;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+        }
+        
+        .header {
+            background: rgba(10, 15, 26, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(201, 110, 58, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .logo-method { color: white; }
+        .logo-rot { color: #c96e3a; }
+        
+        .back-link {
+            color: #94a3b8;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50px;
+        }
+        
+        .back-link:hover {
+            color: #c96e3a;
+            border-color: #c96e3a;
+        }
+        
+        .content {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .content:hover {
+            border-color: rgba(201, 110, 58, 0.3);
+            box-shadow: 0 20px 30px -10px rgba(201, 110, 58, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+        
+        h1 span {
+            color: #c96e3a;
+        }
+        
+        .last-updated {
+            color: #c96e3a;
+            font-style: italic;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+            margin: 2rem 0 1rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: #c96e3a;
+        }
+        
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #c96e3a;
+            margin: 1.5rem 0 0.5rem;
+        }
+        
+        p {
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+        
+        ul, ol {
+            color: #94a3b8;
+            margin: 1rem 0 1rem 2rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        a {
+            color: #c96e3a;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer {
+            background: rgba(10, 15, 26, 0.95);
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(201, 110, 58, 0.2);
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+        
+        .footer a {
+            color: #94a3b8;
+            margin: 0 0.5rem;
+        }
+        
+        .footer a:hover {
+            color: #c96e3a;
+        }
+        
+        .footer-links {
+            margin-top: 1rem;
+        }
+        
+        .contact-email {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #94a3b8;
+            margin-top: 1rem;
+        }
+        
+        .contact-email i {
+            color: #c96e3a;
+        }
+        
+        .contact-email a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .contact-email a:hover {
+            color: #c96e3a;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .content {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-method">Método</span>
+                <span class="logo-rot">RoT</span>
+            </a>
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="content">
+            <h1>Termos de <span>Uso</span></h1>
+            <p class="last-updated">Última atualização: 16 de fevereiro de 2026</p>
+            
+            <p>Bem-vindo ao Método RoT. Ao acessar ou usar nosso site, você concorda em cumprir e ficar vinculado aos seguintes termos e condições. Se você não concordar com qualquer parte destes termos, não poderá acessar ou usar nossos serviços.</p>
+            
+            <h2>1. Aceitação dos termos</h2>
+            <p>Estes Termos de Uso constituem um acordo legal vinculativo entre você, usuário, e o Método RoT. Ao acessar nosso site, você declara ter lido, compreendido e concordado com todos os termos aqui descritos.</p>
+            
+            <h2>2. Descrição do serviço</h2>
+            <p>O Método RoT oferece conteúdo digital (e-books) sobre renda online, incluindo:</p>
+            <ul>
+                <li>E-book "Método RoT - Renda Online Total 2026"</li>
+                <li>Conteúdos complementares (bônus, planilhas, checklists)</li>
+                <li>Newsletter com dicas e informações</li>
+            </ul>
+            
+            <h2>3. Elegibilidade</h2>
+            <p>Para usar nossos serviços, você declara que:</p>
+            <ul>
+                <li>Tem pelo menos 18 anos de idade ou a maioridade legal em sua jurisdição</li>
+                <li>É capaz de celebrar contratos vinculativos</li>
+                <li>Não está proibido de usar nossos serviços por qualquer lei aplicável</li>
+            </ul>
+            
+            <h2>4. Propriedade intelectual</h2>
+            <p>Todo o conteúdo disponível no site, incluindo mas não se limitando a textos, gráficos, logos, ícones, imagens, áudios, vídeos e softwares, é de propriedade exclusiva do Método RoT ou de seus licenciadores e está protegido pelas leis de direitos autorais e propriedade intelectual.</p>
+            <p>É proibido copiar, reproduzir, modificar, distribuir, exibir publicamente ou criar obras derivadas sem autorização expressa por escrito.</p>
+            
+            <h2>5. Produtos digitais</h2>
+            <h3>5.1 Compra e entrega</h3>
+            <p>Os produtos digitais (e-books) são entregues imediatamente após a confirmação do pagamento, por meio de link enviado ao e-mail cadastrado. É responsabilidade do usuário fornecer um endereço de e-mail válido e acessível.</p>
+            
+            <h3>5.2 Preços e disponibilidade</h3>
+            <p>Os preços estão indicados em reais (R$) e podem ser alterados sem aviso prévio. O preço válido é o informado no momento da compra. Não nos responsabilizamos por erros tipográficos ou de digitação.</p>
+            
+            <h3>5.3 Garantia e reembolso</h3>
+            <p>Oferecemos garantia de satisfação de 7 dias (para o plano Standard) e 30 dias (para o plano Plus). Se, dentro deste prazo, você não estiver satisfeito, poderá solicitar reembolso integral pelo nosso canal de contato.</p>
+            
+            <h2>6. Conduta do usuário</h2>
+            <p>Ao usar nosso site, você concorda em não:</p>
+            <ul>
+                <li>Violar qualquer lei ou regulamento aplicável</li>
+                <li>Infringir direitos de propriedade intelectual</li>
+                <li>Transmitir material publicitário não solicitado (spam)</li>
+                <li>Tentar acessar áreas restritas do site</li>
+                <li>Utilizar robôs ou outros meios automatizados para coletar dados</li>
+                <li>Compartilhar seu acesso com terceiros</li>
+            </ul>
+            
+            <h2>7. Limitação de responsabilidade</h2>
+            <p>O Método RoT não se responsabiliza por quaisquer danos diretos, indiretos, incidentais, consequenciais ou punitivos decorrentes do uso ou da incapacidade de usar nossos serviços. O conteúdo é fornecido "como está", sem garantias de qualquer tipo, expressas ou implícitas.</p>
+            <p>Os resultados financeiros obtidos com o método dependem exclusivamente do esforço e dedicação do usuário. Não garantimos resultados específicos ou ganhos mínimos.</p>
+            
+            <h2>8. Links para sites de terceiros</h2>
+            <p>Nosso site pode conter links para sites de terceiros (plataformas de pagamento, redes sociais, etc.). Não temos controle sobre o conteúdo ou práticas desses sites e não assumimos responsabilidade por eles. Recomendamos que você leia os termos de uso e políticas de privacidade de cada site que visitar.</p>
+            
+            <h2>9. Modificações dos termos</h2>
+            <p>Podemos modificar estes Termos de Uso a qualquer momento. As alterações entrarão em vigor imediatamente após a publicação no site. O uso continuado do site após as alterações constitui aceitação dos novos termos.</p>
+            
+            <h2>10. Rescisão</h2>
+            <p>Podemos suspender ou encerrar seu acesso ao site a qualquer momento, sem aviso prévio, se você violar estes termos ou por qualquer outra razão, a nosso critério exclusivo.</p>
+            
+            <h2>11. Lei aplicável</h2>
+            <p>Estes Termos de Uso serão regidos e interpretados de acordo com as leis da República Federativa do Brasil, independentemente de seus conflitos de disposições legais.</p>
+            
+            <h2>12. Contato</h2>
+            <p>Para questões relacionadas a estes Termos de Uso, entre em contato:</p>
+            <div class="contact-email" id="contact-termos"></div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <p>© 2026 Método RoT. Todos os direitos reservados.</p>
+        <div class="footer-links">
+            <a href="privacidade.html">Privacidade</a> |
+            <a href="termos.html">Termos</a> |
+            <a href="sobre.html">Sobre</a> |
+            <a href="index.html">Home</a>
+        </div>
+    </footer>
+    
+    <script>
+        // Email masking
+        (function() {
+            const realUser = 'rtonbooks';
+            const realDomain = 'gmail.com';
+            const realEmail = realUser + '@' + realDomain;
+            
+            const displayUser = 'contato';
+            const displayDomain = 'metodorot.com';
+            const displayEmail = displayUser + '@' + displayDomain;
+            
+            document.querySelectorAll('[id^="contact-"]').forEach(container => {
+                if (container) {
+                    container.innerHTML = `
+                        <i class="fas fa-envelope" aria-hidden="true"></i>
+                        <a href="mailto:${realEmail}">
+                            ${displayEmail}
+                        </a>
+                    `;
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
