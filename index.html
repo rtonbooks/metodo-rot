@@ -50,9 +50,12 @@
   <!-- ===== AOS ===== -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" media="print" onload="this.media='all'">
   
+  <!-- ===== RECAPTCHA ===== -->
+  <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+  
   <style>
     /* ===== BAUNFIRE STANDARDS ===== */
-    /* Version: 4.8 | Author: Baunfire Agency */
+    /* Version: 5.0 | Author: Baunfire Agency */
     /* Last Updated: 2026-02-16 */
     
     /* ===== VARIABLES ===== */
@@ -985,7 +988,7 @@
       color: var(--accent);
     }
 
-    /* ===== NEWSLETTER FORM - IFRAME (FUNCIONAL) ===== */
+    /* ===== NEWSLETTER FORM - AJAX COM VISUAL UNIFORME ===== */
     .footer-form {
       display: flex;
       flex-direction: column;
@@ -1033,13 +1036,76 @@
       box-shadow: 0 10px 20px -5px var(--accent-glow);
     }
 
-    /* ESTILOS DO IFRAME */
-    .brevo-iframe {
-      width: 100%;
-      height: 350px;
-      border: none;
-      background: transparent;
-      margin-top: var(--space-sm);
+    .footer-button.loading {
+      opacity: 0.7;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .footer-button.loading span {
+      visibility: hidden;
+    }
+
+    .footer-button.loading::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      left: 50%;
+      margin-top: -10px;
+      margin-left: -10px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spinner 0.8s linear infinite;
+    }
+
+    @keyframes spinner {
+      to { transform: rotate(360deg); }
+    }
+
+    .footer-message {
+      text-align: center;
+      font-size: 0.9rem;
+      padding: 0.5rem;
+      border-radius: 6px;
+      margin-top: 0.5rem;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s var(--transition-smooth);
+      display: none;
+    }
+
+    .footer-message.show {
+      opacity: 1;
+      transform: translateY(0);
+      display: block;
+    }
+
+    .footer-message.success {
+      background: var(--success-bg);
+      border: 1px solid rgba(72, 187, 120, 0.3);
+      color: var(--success);
+    }
+
+    .footer-message.error {
+      background: var(--error-bg);
+      border: 1px solid rgba(245, 101, 101, 0.3);
+      color: var(--error);
+    }
+
+    /* ===== CAPTCHA CONTAINER ===== */
+    #captcha-container {
+      margin: 10px 0;
+      min-height: 78px;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .g-recaptcha {
+      transform: scale(0.9);
+      transform-origin: 0 0;
     }
 
     .footer-bottom {
@@ -1208,8 +1274,8 @@
         text-align: center;
       }
       
-      .brevo-iframe {
-        height: 400px;
+      .g-recaptcha {
+        transform: scale(0.8);
       }
     }
 
@@ -1247,6 +1313,11 @@
 
       .pricing-card {
         min-height: 440px;
+      }
+      
+      .g-recaptcha {
+        transform: scale(0.7);
+        transform-origin: 0 0;
       }
     }
   </style>
@@ -1562,14 +1633,22 @@
           <div class="footer-col">
             <h3>Newsletter</h3>
             <p>Receba conteúdos exclusivos sobre renda online.</p>
-            <!-- IFRAME DO BREVO - VERSÃO FUNCIONAL -->
-            <iframe 
-              class="brevo-iframe"
-              src="https://fa1d7e0d.sibforms.com/serve/MUIFAFTxsSWLXXb0V2K87cJ3tPtTaLtUHUwBBlbCN0KBk9h3leoFWfKOffUqw5fh1_gs0GRfdKXhqFiYuEVbOvv0SAT4Mr5dyUzMpQChTnpNfi-YKEQwEltqqttdALGqQ9gPv38gGlevM7-qXGtAbXjaixGfaScVB7yowHPH7wDOwQlEtyN5AwzMmXQaQjsvLFa3H8Y-OvKaYjGfhQ==" 
-              frameborder="0" 
-              scrolling="auto" 
-              allowfullscreen>
-            </iframe>
+            <form class="footer-form" id="brevoForm">
+              <label for="nome" class="sr-only">Seu nome</label>
+              <input type="text" class="footer-input" id="nome" placeholder="Seu nome" required autocomplete="name">
+              
+              <label for="email" class="sr-only">Seu e-mail</label>
+              <input type="email" class="footer-input" id="email" placeholder="Seu e-mail" required autocomplete="email">
+              
+              <!-- CAPTCHA CONTAINER -->
+              <div id="captcha-container"></div>
+              
+              <button type="submit" class="footer-button" id="submitBtn">
+                <span>INSCREVER-SE</span>
+              </button>
+              
+              <div class="footer-message" id="formMessage"></div>
+            </form>
           </div>
         </div>
         
@@ -1599,7 +1678,7 @@
   
   <script>
     // ============================================
-    // MÉTODO ROT - MAIN SCRIPT v4.8 (IFRAME)
+    // MÉTODO ROT - MAIN SCRIPT v5.0 (AJAX UNIFORME)
     // ============================================
     
     // EMAIL MASKING - contato@metodorot.com (exibido) → rtonbooks@gmail.com (real)
@@ -1738,7 +1817,153 @@
       if (bgImage) bgImage.classList.add('fallback');
     };
 
-    console.log('✅ Site v4.8 carregado - Versão IFRAME (funcional)');
+    // ============================================
+    // BREVO NEWSLETTER FORM - AJAX COM VISUAL UNIFORME
+    // ============================================
+    
+    // CONFIGURAÇÕES
+    const BREVO_URL = 'https://fa1d7e0d.sibforms.com/serve/MUIFAFTxsSWLXXb0V2K87cJ3tPtTaLtUHUwBBlbCN0KBk9h3leoFWfKOffUqw5fh1_gs0GRfdKXhqFiYuEVbOvv0SAT4Mr5dyUzMpQChTnpNfi-YKEQwEltqqttdALGqQ9gPv38gGlevM7-qXGtAbXjaixGfaScVB7yowHPH7wDOwQlEtyN5AwzMmXQaQjsvLFa3H8Y-OvKaYjGfhQ==';
+    const LIST_ID = 5; // ID da lista
+    
+    // ELEMENTOS DO FORMULÁRIO
+    const brevoForm = document.getElementById('brevoForm');
+    const nomeInput = document.getElementById('nome');
+    const emailInput = document.getElementById('email');
+    const submitBtn = document.getElementById('submitBtn');
+    const formMessage = document.getElementById('formMessage');
+    const captchaContainer = document.getElementById('captcha-container');
+
+    // VARIÁVEL PARA O CAPTCHA
+    let captchaWidgetId = null;
+
+    // FUNÇÃO CALLBACK DO RECAPTCHA
+    window.onloadCallback = function() {
+      if (captchaContainer) {
+        captchaWidgetId = grecaptcha.render('captcha-container', {
+          'sitekey': '6Lc172ssAAAAAC-DlDHwMqJfKJs6Po_0u-isLhEl',
+          'theme': 'dark',
+          'size': 'normal'
+        });
+        console.log('✅ reCAPTCHA carregado');
+      }
+    };
+
+    // FUNÇÕES AUXILIARES
+    function showMessage(message, type = 'success') {
+      if (!formMessage) return;
+      formMessage.textContent = message;
+      formMessage.className = `footer-message ${type} show`;
+      setTimeout(() => {
+        formMessage.classList.remove('show');
+      }, 5000);
+    }
+
+    function setLoading(loading) {
+      if (!submitBtn) return;
+      if (loading) {
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+      } else {
+        submitBtn.classList.remove('loading');
+        submitBtn.disabled = false;
+      }
+    }
+
+    function validateEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    // SUBMIT DO FORMULÁRIO
+    if (brevoForm) {
+      brevoForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        console.log('1️⃣ Submit capturado!');
+
+        const nome = nomeInput?.value.trim() || '';
+        const email = emailInput?.value.trim() || '';
+        console.log('2️⃣ Valores:', { nome, email });
+
+        // Validações
+        if (!nome || !email) {
+          console.log('3️⃣ Campos vazios');
+          showMessage('Preencha todos os campos!', 'error');
+          return;
+        }
+
+        if (!validateEmail(email)) {
+          console.log('3️⃣ Email inválido');
+          showMessage('Email inválido!', 'error');
+          return;
+        }
+
+        // VALIDAÇÃO DO CAPTCHA
+        if (!captchaWidgetId) {
+          showMessage('Aguardando carregamento do captcha...', 'error');
+          return;
+        }
+
+        const captchaResponse = grecaptcha.getResponse(captchaWidgetId);
+        if (!captchaResponse) {
+          showMessage('Por favor, confirme que você não é um robô', 'error');
+          return;
+        }
+
+        console.log('3️⃣ Validações OK, captcha OK');
+        setLoading(true);
+        console.log('4️⃣ Loading ativado');
+
+        try {
+          console.log('5️⃣ Antes do fetch');
+          
+          const response = await fetch(BREVO_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+              email: email,
+              attributes: {
+                NOME: nome,
+                FIRSTNAME: nome
+              },
+              listIds: [LIST_ID],
+              'g-recaptcha-response': captchaResponse
+            })
+          });
+          
+          console.log('6️⃣ Depois do fetch, status:', response.status);
+
+          if (response.ok || response.status === 200 || response.status === 201) {
+            console.log('7️⃣ Resposta OK');
+            showMessage('✓ Obrigado! Você foi inscrito com sucesso.', 'success');
+            brevoForm.reset();
+            
+            // Reset captcha
+            if (captchaWidgetId) {
+              grecaptcha.reset(captchaWidgetId);
+            }
+          } else {
+            const errorText = await response.text();
+            console.log('7️⃣ Resposta não OK, status:', response.status, 'Detalhes:', errorText);
+            throw new Error('Erro no envio: ' + errorText);
+          }
+        } catch (error) {
+          console.error('8️⃣ Erro capturado:', error);
+          showMessage('✗ Ops! Algo deu errado. Tente novamente.', 'error');
+          
+          // Reset captcha em caso de erro
+          if (captchaWidgetId) {
+            grecaptcha.reset(captchaWidgetId);
+          }
+        } finally {
+          console.log('9️⃣ Finally: removendo loading');
+          setLoading(false);
+        }
+      });
+    }
+
+    console.log('✅ Site v5.0 carregado - AJAX com visual uniforme');
   </script>
 </body>
 </html>
