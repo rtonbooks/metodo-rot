@@ -55,7 +55,7 @@
   
   <style>
     /* ===== BAUNFIRE STANDARDS ===== */
-    /* Version: 5.1 | Author: Baunfire Agency */
+    /* Version: 5.2 | Author: Baunfire Agency */
     /* Last Updated: 2026-02-16 */
     
     :root {
@@ -979,7 +979,7 @@
       color: var(--accent);
     }
 
-    /* ===== NEWSLETTER FORM - AJAX COM PROXY ===== */
+    /* ===== NEWSLETTER FORM - AJAX COM PROXY E CAPTCHA CORRIGIDO ===== */
     .footer-form {
       display: flex;
       flex-direction: column;
@@ -1669,7 +1669,7 @@
   
   <script>
     // ============================================
-    // MÉTODO ROT - MAIN SCRIPT v5.1 (AJAX + PROXY)
+    // MÉTODO ROT - MAIN SCRIPT v5.2 (CAPTCHA CORRIGIDO)
     // ============================================
     
     // EMAIL MASKING - contato@metodorot.com (exibido) → rtonbooks@gmail.com (real)
@@ -1809,10 +1809,10 @@
     };
 
     // ============================================
-    // BREVO NEWSLETTER FORM - AJAX COM PROXY
+    // BREVO NEWSLETTER FORM - AJAX COM PROXY E CAPTCHA CORRIGIDO
     // ============================================
     
-    // URL do proxy (NÃO é mais a URL direta do Brevo)
+    // URL do proxy
     const PROXY_URL = '/.netlify/functions/brevo-proxy';
     const LIST_ID = 5; // ID da lista
     
@@ -1829,13 +1829,20 @@
 
     // FUNÇÃO CALLBACK DO RECAPTCHA
     window.onloadCallback = function() {
+      console.log('🔵 Callback do reCAPTCHA acionada');
       if (captchaContainer) {
-        captchaWidgetId = grecaptcha.render('captcha-container', {
-          'sitekey': '6Lc172ssAAAAAC-DlDHwMqJfKJs6Po_0u-isLhEl',
-          'theme': 'dark',
-          'size': 'normal'
-        });
-        console.log('✅ reCAPTCHA carregado');
+        try {
+          captchaWidgetId = grecaptcha.render('captcha-container', {
+            'sitekey': '6Lc172ssAAAAAC-DlDHwMqJfKJs6Po_0u-isLhEl',
+            'theme': 'dark',
+            'size': 'normal'
+          });
+          console.log('✅ reCAPTCHA renderizado com ID:', captchaWidgetId);
+        } catch (e) {
+          console.error('❌ Erro ao renderizar reCAPTCHA:', e);
+        }
+      } else {
+        console.error('❌ Container do captcha não encontrado');
       }
     };
 
@@ -1864,6 +1871,26 @@
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
 
+    // FUNÇÃO PARA AGUARDAR O CAPTCHA CARREGAR
+    async function waitForCaptcha(maxAttempts = 20) {
+      console.log('⏳ Aguardando captcha carregar...');
+      for (let i = 0; i < maxAttempts; i++) {
+        if (captchaWidgetId !== null && typeof grecaptcha !== 'undefined') {
+          try {
+            const response = grecaptcha.getResponse(captchaWidgetId);
+            console.log(`📊 Tentativa ${i+1}: captchaWidgetId=${captchaWidgetId}, resposta=${response ? 'preenchido' : 'vazio'}`);
+          } catch (e) {
+            console.log(`📊 Tentativa ${i+1}: captchaWidgetId=${captchaWidgetId}, erro ao ler resposta`);
+          }
+          console.log(`✅ Captcha carregado após ${i+1} tentativas`);
+          return true;
+        }
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      console.error('❌ Captcha não carregou após', maxAttempts, 'tentativas');
+      return false;
+    }
+
     // SUBMIT DO FORMULÁRIO
     if (brevoForm) {
       brevoForm.addEventListener('submit', async (e) => {
@@ -1887,14 +1914,25 @@
           return;
         }
 
+        // AGUARDAR CAPTCHA CARREGAR
+        const captchaReady = await waitForCaptcha(30);
+        if (!captchaReady) {
+          showMessage('Erro ao carregar captcha. Recarregue a página.', 'error');
+          return;
+        }
+
         // VALIDAÇÃO DO CAPTCHA
-        if (!captchaWidgetId) {
-          showMessage('Aguardando carregamento do captcha...', 'error');
+        if (captchaWidgetId === null) {
+          console.log('3️⃣ captchaWidgetId é null');
+          showMessage('Erro na configuração do captcha', 'error');
           return;
         }
 
         const captchaResponse = grecaptcha.getResponse(captchaWidgetId);
+        console.log('🔍 Resposta do captcha:', captchaResponse ? 'OK' : 'VAZIA');
+        
         if (!captchaResponse) {
+          console.log('3️⃣ Captcha não marcado');
           showMessage('Por favor, confirme que você não é um robô', 'error');
           return;
         }
@@ -1931,7 +1969,9 @@
             if (data.success) {
               showMessage('✓ Obrigado! Você foi inscrito com sucesso.', 'success');
               brevoForm.reset();
-              if (captchaWidgetId) grecaptcha.reset(captchaWidgetId);
+              if (captchaWidgetId) {
+                grecaptcha.reset(captchaWidgetId);
+              }
             } else {
               throw new Error('Erro no servidor');
             }
@@ -1942,7 +1982,9 @@
           console.error('8️⃣ Erro capturado:', error);
           showMessage('✗ Ops! Algo deu errado. Tente novamente.', 'error');
           
-          if (captchaWidgetId) grecaptcha.reset(captchaWidgetId);
+          if (captchaWidgetId) {
+            grecaptcha.reset(captchaWidgetId);
+          }
         } finally {
           console.log('9️⃣ Finally: removendo loading');
           setLoading(false);
@@ -1950,7 +1992,7 @@
       });
     }
 
-    console.log('✅ Site v5.1 carregado - AJAX com proxy (CORB resolvido)');
+    console.log('✅ Site v5.2 carregado - Captcha com waitForCaptcha');
   </script>
 </body>
 </html>
