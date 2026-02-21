@@ -1,98 +1,87 @@
 // netlify/functions/brevo-proxy.js
-const BREVO_URL = 'https://fa1d7e0d.sibforms.com/serve/MUIFAFTxsSWLXXb0V2K87cJ3tPtTaLtUHUwBBlbCN0KBk9h3leoFWfKOffUqw5fh1_gs0GRfdKXhqFiYuEVbOvv0SAT4Mr5dyUzMpQChTnpNfi-YKEQwEltqqttdALGqQ9gPv38gGlevM7-qXGtAbXjaixGfaScVB7yowHPH7wDOwQlEtyN5AwzMmXQaQjsvLFa3H8Y-OvKaYjGfhQ==';
+// VERSÃO CORRIGIDA - com CORS funcionando
+
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
+const BREVO_API_URL = 'https://api.brevo.com/v3/contacts';
 
 exports.handler = async (event) => {
-    // Log para diagnóstico (você verá isso nos logs do Netlify)
-    console.log('🔵 Proxy function called - Method:', event.httpMethod);
-    
-    // Só aceita POST
-    if (event.httpMethod !== 'POST') {
-        return {
-            statusCode: 405,
-            body: JSON.stringify({ error: 'Method not allowed' })
-        };
-    }
+  console.log('🔵 Proxy function iniciada');
+  
+  // ===== CABEÇALHOS CORS (o "crachá" que faltava) =====
+  const headers = {
+    'Access-Control-Allow-Origin': '*',           // Permite qualquer site
+    'Access-Control-Allow-Headers': 'Content-Type', // Permite headers específicos
+    'Access-Control-Allow-Methods': 'POST, OPTIONS', // Permite métodos
+    'Content-Type': 'application/json'
+  };
 
-    try {
-        // Pegar os dados enviados pelo formulário
-        const formData = JSON.parse(event.body);
-        console.log('📦 Dados recebidos:', { 
-            email: formData.email,
-            listIds: formData.listIds,
-            hasCaptcha: !!formData['g-recaptcha-response']
-        });
+  // ===== RESPOSTA PARA PREFLIGHT (REQUISIÇÃO OPTIONS) =====
+  // O navegador sempre pergunta "pode?" antes de enviar
+  if (event.httpMethod === 'OPTIONS') {
+    console.log('🔵 Respondendo preflight OPTIONS');
+    return {
+      statusCode: 200,
+      headers,
+      body: ''
+    };
+  }
 
-        // Preparar os dados para enviar ao Brevo
-        const brevoData = {
-            email: formData.email,
-            attributes: formData.attributes || {
-                NOME: formData.nome || '',
-                FIRSTNAME: formData.nome || ''
-            },
-            listIds: formData.listIds || [5], // ID padrão 5
-            updateEnabled: true // ← ESSA É A CHAVE! Garante que o contato seja adicionado à lista
-        };
+  // ===== SÓ ACEITA POST =====
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      headers,
+      body: JSON.stringify({ error: 'Método não permitido' })
+    };
+  }
 
-        // Se tiver captcha, incluir
-        if (formData['g-recaptcha-response']) {
-            brevoData['g-recaptcha-response'] = formData['g-recaptcha-response'];
-        }
+  try {
+    // ===== PROCESSA O FORMULÁRIO =====
+    const formData = JSON.parse(event.body);
+    console.log('📦 Dados recebidos:', formData.email);
 
-        console.log('📤 Enviando para o Brevo:', brevoData);
+    // ===== ENVIA PARA O BREVO =====
+    const response = await fetch(BREVO_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': BREVO_API_KEY
+      },
+      body: JSON.stringify({
+        email: formData.email,
+        attributes: {
+          NOME: formData.attributes?.NOME || '',
+          FIRSTNAME: formData.attributes?.NOME || '',
+          SOURCE: 'Site Método RoT'
+        },
+        listIds: formData.listIds || [5],
+        updateEnabled: true
+      })
+    });
 
-        // Enviar para o Brevo
-        const response = await fetch(BREVO_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(brevoData)
-        });
+    const data = await response.json();
+    console.log('📬 Resposta Brevo:', response.status);
 
-        // Tentar ler a resposta (pode ser que o Brevo retorne HTML em vez de JSON)
-        let responseData;
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-            responseData = await response.json();
-        } else {
-            responseData = await response.text();
-        }
+    // ===== RESPOSTA COM OS CABEÇALHOS CORS =====
+    return {
+      statusCode: response.status,
+      headers, // AQUI ESTÁ O SEGREDO! Sempre incluir os headers
+      body: JSON.stringify({
+        success: response.ok,
+        message: response.ok ? 'Lead adicionado com sucesso' : 'Erro no Brevo',
+        data: data
+      })
+    };
 
-        console.log('📥 Resposta do Brevo:', {
-            status: response.status,
-            statusText: response.statusText,
-            data: responseData
-        });
-
-        // Retornar o resultado para o navegador
-        return {
-            statusCode: response.status,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
-            body: JSON.stringify({ 
-                success: response.ok,
-                status: response.status,
-                message: response.ok ? 'Lead adicionado com sucesso' : 'Erro ao adicionar lead'
-            })
-        };
-
-    } catch (error) {
-        console.error('❌ Proxy error:', error.message);
-        console.error(error.stack);
-        
-        return {
-            statusCode: 500,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
-            body: JSON.stringify({ 
-                success: false,
-                error: 'Proxy error',
-                message: error.message 
-            })
-        };
-    }
+  } catch (error) {
+    console.error('❌ Erro:', error);
+    return {
+      statusCode: 500,
+      headers, // Incluir headers até no erro
+      body: JSON.stringify({ 
+        success: false, 
+        error: error.message 
+      })
+    };
+  }
 };
