@@ -51,7 +51,7 @@
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" media="print" onload="this.media='all'">
   
   <!-- ===== RECAPTCHA ===== -->
-  <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+  <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit&hl=pt-BR" async defer></script>
   
   <style>
     /* ===== BAUNFIRE STANDARDS ===== */
@@ -979,7 +979,7 @@
       color: var(--accent);
     }
 
-    /* ===== NEWSLETTER FORM - AJAX COM PROXY E CAPTCHA CORRIGIDO ===== */
+    /* ===== NEWSLETTER FORM - VERSÃO CORRIGIDA COM CAPTCHA ===== */
     .footer-form {
       display: flex;
       flex-direction: column;
@@ -1086,17 +1086,36 @@
       color: var(--error);
     }
 
-    /* ===== CAPTCHA CONTAINER ===== */
+    /* ===== CAPTCHA CONTAINER - VERSÃO OTIMIZADA ===== */
     #captcha-container {
-      margin: 10px 0;
-      min-height: 78px;
+      margin: 15px 0;
+      min-height: 85px;
       display: flex;
       justify-content: center;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 8px;
+      padding: 5px;
+      transition: all 0.3s ease;
+    }
+    
+    #captcha-container > div {
+      margin: 0 auto;
+      transform-origin: center;
     }
     
     .g-recaptcha {
-      transform: scale(0.9);
-      transform-origin: 0 0;
+      transform: scale(0.95);
+      transform-origin: center;
+    }
+    
+    @media (max-width: 480px) {
+      #captcha-container {
+        min-height: 75px;
+      }
+      .g-recaptcha {
+        transform: scale(0.85);
+      }
     }
 
     .footer-bottom {
@@ -1265,8 +1284,12 @@
         text-align: center;
       }
       
+      #captcha-container {
+        min-height: 75px;
+      }
+      
       .g-recaptcha {
-        transform: scale(0.8);
+        transform: scale(0.9);
       }
     }
 
@@ -1306,9 +1329,12 @@
         min-height: 440px;
       }
       
+      #captcha-container {
+        min-height: 70px;
+      }
+      
       .g-recaptcha {
-        transform: scale(0.7);
-        transform-origin: 0 0;
+        transform: scale(0.8);
       }
     }
   </style>
@@ -1631,7 +1657,7 @@
               <label for="email" class="sr-only">Seu e-mail</label>
               <input type="email" class="footer-input" id="email" placeholder="Seu e-mail" required autocomplete="email">
               
-              <!-- CAPTCHA CONTAINER -->
+              <!-- CAPTCHA CONTAINER - VERSÃO OTIMIZADA -->
               <div id="captcha-container"></div>
               
               <button type="submit" class="footer-button" id="submitBtn">
@@ -1669,7 +1695,7 @@
   
   <script>
     // ============================================
-    // MÉTODO ROT - MAIN SCRIPT v5.2 (CAPTCHA CORRIGIDO)
+    // MÉTODO ROT - MAIN SCRIPT v5.3 (CAPTCHA GARANTIDO)
     // ============================================
     
     // EMAIL MASKING - contato@metodorot.com (exibido) → rtonbooks@gmail.com (real)
@@ -1809,190 +1835,282 @@
     };
 
     // ============================================
-    // BREVO NEWSLETTER FORM - AJAX COM PROXY E CAPTCHA CORRIGIDO
+    // BREVO NEWSLETTER FORM - VERSÃO CORRIGIDA COM CAPTCHA GARANTIDO
     // ============================================
     
-    // URL do proxy
-    const PROXY_URL = '/.netlify/functions/brevo-proxy';
-    const LIST_ID = 5; // ID da lista
-    
-    // ELEMENTOS DO FORMULÁRIO
-    const brevoForm = document.getElementById('brevoForm');
-    const nomeInput = document.getElementById('nome');
-    const emailInput = document.getElementById('email');
-    const submitBtn = document.getElementById('submitBtn');
-    const formMessage = document.getElementById('formMessage');
-    const captchaContainer = document.getElementById('captcha-container');
+    (function() {
+      // Configurações
+      const PROXY_URL = '/.netlify/functions/brevo-proxy';
+      const LIST_ID = 5;
+      const SITE_KEY = '6Lc172ssAAAAAC-DlDHwMqJfKJs6Po_0u-isLhEl';
+      
+      // Elementos do DOM
+      const brevoForm = document.getElementById('brevoForm');
+      const nomeInput = document.getElementById('nome');
+      const emailInput = document.getElementById('email');
+      const submitBtn = document.getElementById('submitBtn');
+      const formMessage = document.getElementById('formMessage');
+      const captchaContainer = document.getElementById('captcha-container');
 
-    // VARIÁVEL PARA O CAPTCHA
-    let captchaWidgetId = null;
+      // Estado do captcha
+      let captchaWidgetId = null;
+      let captchaReady = false;
+      let captchaRenderAttempts = 0;
+      const MAX_RENDER_ATTEMPTS = 10;
 
-    // FUNÇÃO CALLBACK DO RECAPTCHA
-    window.onloadCallback = function() {
-      console.log('🔵 Callback do reCAPTCHA acionada');
-      if (captchaContainer) {
-        try {
-          captchaWidgetId = grecaptcha.render('captcha-container', {
-            'sitekey': '6Lc172ssAAAAAC-DlDHwMqJfKJs6Po_0u-isLhEl',
-            'theme': 'dark',
-            'size': 'normal'
-          });
-          console.log('✅ reCAPTCHA renderizado com ID:', captchaWidgetId);
-        } catch (e) {
-          console.error('❌ Erro ao renderizar reCAPTCHA:', e);
+      // ===== FUNÇÃO PRINCIPAL DE RENDERIZAÇÃO DO CAPTCHA =====
+      function renderCaptcha() {
+        // Verificações básicas
+        if (!captchaContainer) {
+          console.error('❌ Container captcha-container não encontrado');
+          return false;
         }
-      } else {
-        console.error('❌ Container do captcha não encontrado');
+
+        if (typeof grecaptcha === 'undefined' || typeof grecaptcha.render !== 'function') {
+          console.error('❌ API do reCAPTCHA não disponível');
+          return false;
+        }
+
+        // Limpa o container
+        captchaContainer.innerHTML = '';
+
+        try {
+          // Tenta renderizar
+          captchaWidgetId = grecaptcha.render(captchaContainer, {
+            'sitekey': SITE_KEY,
+            'theme': 'dark',
+            'size': 'normal',
+            'callback': function(response) {
+              console.log('✅ Captcha preenchido com sucesso');
+              captchaReady = true;
+            },
+            'expired-callback': function() {
+              console.log('⚠️ Captcha expirado');
+              captchaReady = false;
+            },
+            'error-callback': function() {
+              console.error('❌ Erro no captcha');
+              captchaReady = false;
+            }
+          });
+
+          console.log('✅ reCAPTCHA renderizado com ID:', captchaWidgetId);
+          
+          // Verifica se foi inserido no DOM
+          setTimeout(() => {
+            if (captchaContainer.children.length > 0) {
+              console.log('✅ Captcha visível no DOM:', captchaContainer.children.length, 'filho(s)');
+              captchaReady = true;
+            } else {
+              console.error('❌ Captcha não apareceu no DOM');
+            }
+          }, 500);
+
+          return true;
+
+        } catch (error) {
+          console.error('❌ Erro ao renderizar reCAPTCHA:', error);
+          return false;
+        }
       }
-    };
 
-    // FUNÇÕES AUXILIARES
-    function showMessage(message, type = 'success') {
-      if (!formMessage) return;
-      formMessage.textContent = message;
-      formMessage.className = `footer-message ${type} show`;
-      setTimeout(() => {
-        formMessage.classList.remove('show');
-      }, 5000);
-    }
+      // ===== TENTAR RENDERIZAR CAPTCHA COM RETRY =====
+      function attemptRenderCaptcha() {
+        if (captchaRenderAttempts >= MAX_RENDER_ATTEMPTS) {
+          console.error('❌ Máximo de tentativas de renderização atingido');
+          return;
+        }
 
-    function setLoading(loading) {
-      if (!submitBtn) return;
-      if (loading) {
-        submitBtn.classList.add('loading');
-        submitBtn.disabled = true;
-      } else {
-        submitBtn.classList.remove('loading');
-        submitBtn.disabled = false;
-      }
-    }
+        captchaRenderAttempts++;
+        console.log(`🔄 Tentativa ${captchaRenderAttempts} de renderizar captcha...`);
 
-    function validateEmail(email) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
-    // FUNÇÃO PARA AGUARDAR O CAPTCHA CARREGAR
-    async function waitForCaptcha(maxAttempts = 20) {
-      console.log('⏳ Aguardando captcha carregar...');
-      for (let i = 0; i < maxAttempts; i++) {
-        if (captchaWidgetId !== null && typeof grecaptcha !== 'undefined') {
-          try {
-            const response = grecaptcha.getResponse(captchaWidgetId);
-            console.log(`📊 Tentativa ${i+1}: captchaWidgetId=${captchaWidgetId}, resposta=${response ? 'preenchido' : 'vazio'}`);
-          } catch (e) {
-            console.log(`📊 Tentativa ${i+1}: captchaWidgetId=${captchaWidgetId}, erro ao ler resposta`);
-          }
-          console.log(`✅ Captcha carregado após ${i+1} tentativas`);
+        if (renderCaptcha()) {
           return true;
         }
-        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Se falhou, tenta novamente após delay
+        setTimeout(attemptRenderCaptcha, 500);
       }
-      console.error('❌ Captcha não carregou após', maxAttempts, 'tentativas');
-      return false;
-    }
 
-    // SUBMIT DO FORMULÁRIO
-    if (brevoForm) {
-      brevoForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        console.log('1️⃣ Submit capturado!');
+      // ===== CALLBACK DO RECAPTCHA =====
+      window.onloadCallback = function() {
+        console.log('🔵 Callback do reCAPTCHA acionado');
+        attemptRenderCaptcha();
+      };
 
-        const nome = nomeInput?.value.trim() || '';
-        const email = emailInput?.value.trim() || '';
-        console.log('2️⃣ Valores:', { nome, email });
+      // ===== FUNÇÕES AUXILIARES =====
+      function showMessage(message, type = 'success') {
+        if (!formMessage) return;
+        formMessage.textContent = message;
+        formMessage.className = `footer-message ${type} show`;
+        setTimeout(() => {
+          formMessage.classList.remove('show');
+        }, 5000);
+      }
 
-        // Validações
-        if (!nome || !email) {
-          console.log('3️⃣ Campos vazios');
-          showMessage('Preencha todos os campos!', 'error');
-          return;
+      function setLoading(loading) {
+        if (!submitBtn) return;
+        if (loading) {
+          submitBtn.classList.add('loading');
+          submitBtn.disabled = true;
+        } else {
+          submitBtn.classList.remove('loading');
+          submitBtn.disabled = false;
         }
+      }
 
-        if (!validateEmail(email)) {
-          console.log('3️⃣ Email inválido');
-          showMessage('Email inválido!', 'error');
-          return;
-        }
+      function validateEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      }
 
-        // AGUARDAR CAPTCHA CARREGAR
-        const captchaReady = await waitForCaptcha(30);
-        if (!captchaReady) {
-          showMessage('Erro ao carregar captcha. Recarregue a página.', 'error');
-          return;
-        }
+      function isCaptchaVisible() {
+        if (!captchaContainer) return false;
+        const style = window.getComputedStyle(captchaContainer);
+        const rect = captchaContainer.getBoundingClientRect();
+        return style.display !== 'none' && 
+               style.visibility !== 'hidden' && 
+               rect.width > 0 && 
+               rect.height > 0 &&
+               captchaContainer.children.length > 0;
+      }
 
-        // VALIDAÇÃO DO CAPTCHA
-        if (captchaWidgetId === null) {
-          console.log('3️⃣ captchaWidgetId é null');
-          showMessage('Erro na configuração do captcha', 'error');
-          return;
-        }
-
-        const captchaResponse = grecaptcha.getResponse(captchaWidgetId);
-        console.log('🔍 Resposta do captcha:', captchaResponse ? 'OK' : 'VAZIA');
-        
-        if (!captchaResponse) {
-          console.log('3️⃣ Captcha não marcado');
-          showMessage('Por favor, confirme que você não é um robô', 'error');
-          return;
-        }
-
-        console.log('3️⃣ Validações OK, captcha OK');
-        setLoading(true);
-        console.log('4️⃣ Loading ativado');
-
+      function getCaptchaResponse() {
+        if (!captchaWidgetId || typeof grecaptcha === 'undefined') return null;
         try {
-          console.log('5️⃣ Enviando para o proxy');
+          return grecaptcha.getResponse(captchaWidgetId);
+        } catch (e) {
+          console.error('Erro ao obter resposta do captcha:', e);
+          return null;
+        }
+      }
+
+      // ===== SUBMIT DO FORMULÁRIO =====
+      if (brevoForm) {
+        brevoForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          console.log('📝 Formulário submetido');
+
+          const nome = nomeInput?.value.trim() || '';
+          const email = emailInput?.value.trim() || '';
+
+          // Validações básicas
+          if (!nome || !email) {
+            showMessage('Preencha todos os campos!', 'error');
+            return;
+          }
+
+          if (!validateEmail(email)) {
+            showMessage('Email inválido!', 'error');
+            return;
+          }
+
+          // Verifica se captcha está visível
+          if (!isCaptchaVisible()) {
+            console.log('⚠️ Captcha não visível');
+            showMessage('Aguardando carregamento do captcha...', 'error');
+            attemptRenderCaptcha();
+            return;
+          }
+
+          // Obtém resposta do captcha
+          const captchaResponse = getCaptchaResponse();
           
-          const response = await fetch(PROXY_URL, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
+          if (!captchaResponse) {
+            console.log('⚠️ Captcha não preenchido');
+            showMessage('Por favor, confirme que você não é um robô', 'error');
+            return;
+          }
+
+          console.log('✅ Validações OK, captcha OK');
+          setLoading(true);
+
+          try {
+            // Payload para o proxy
+            const payload = {
               email: email,
               attributes: {
                 NOME: nome,
-                FIRSTNAME: nome
+                FIRSTNAME: nome,
+                SOURCE: 'Site Método RoT'
               },
               listIds: [LIST_ID],
+              updateEnabled: true,
               'g-recaptcha-response': captchaResponse
-            })
-          });
-          
-          console.log('6️⃣ Resposta do proxy, status:', response.status);
+            };
 
-          if (response.ok) {
-            const data = await response.json();
-            console.log('7️⃣ Proxy respondeu:', data);
+            console.log('📤 Enviando para proxy');
+
+            const response = await fetch(PROXY_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+
+            let data;
+            const responseText = await response.text();
             
-            if (data.success) {
+            try {
+              data = JSON.parse(responseText);
+            } catch (e) {
+              console.error('Erro ao parsear resposta:', responseText);
+              throw new Error('Resposta inválida do servidor');
+            }
+
+            console.log('📥 Resposta do proxy:', data);
+
+            if (response.ok && data.success) {
               showMessage('✓ Obrigado! Você foi inscrito com sucesso.', 'success');
               brevoForm.reset();
-              if (captchaWidgetId) {
+              
+              if (captchaWidgetId && typeof grecaptcha !== 'undefined') {
                 grecaptcha.reset(captchaWidgetId);
               }
             } else {
-              throw new Error('Erro no servidor');
+              throw new Error(data.message || 'Erro ao processar inscrição');
             }
-          } else {
-            throw new Error(`Erro HTTP: ${response.status}`);
-          }
-        } catch (error) {
-          console.error('8️⃣ Erro capturado:', error);
-          showMessage('✗ Ops! Algo deu errado. Tente novamente.', 'error');
-          
-          if (captchaWidgetId) {
-            grecaptcha.reset(captchaWidgetId);
-          }
-        } finally {
-          console.log('9️⃣ Finally: removendo loading');
-          setLoading(false);
-        }
-      });
-    }
 
-    console.log('✅ Site v5.2 carregado - Captcha com waitForCaptcha');
+          } catch (error) {
+            console.error('❌ Erro:', error);
+            showMessage('✗ Ops! Algo deu errado. Tente novamente.', 'error');
+            
+            if (captchaWidgetId && typeof grecaptcha !== 'undefined') {
+              grecaptcha.reset(captchaWidgetId);
+            }
+          } finally {
+            setLoading(false);
+          }
+        });
+      }
+
+      // ===== VERIFICAÇÃO INICIAL =====
+      setTimeout(() => {
+        console.log('🔍 Diagnóstico do formulário:');
+        console.log('- Container existe:', !!captchaContainer);
+        console.log('- Container filhos:', captchaContainer?.children.length || 0);
+        console.log('- Widget ID:', captchaWidgetId);
+        console.log('- Captcha pronto:', captchaReady);
+        console.log('- Visível:', isCaptchaVisible());
+        console.log('- grecaptcha disponível:', typeof grecaptcha !== 'undefined');
+        
+        if (captchaContainer && captchaContainer.children.length === 0) {
+          console.log('⚠️ Captcha não detectado, forçando renderização...');
+          attemptRenderCaptcha();
+        }
+      }, 2000);
+
+      // ===== OBSERVADOR DE MUTAÇÃO =====
+      if (captchaContainer && window.MutationObserver) {
+        const observer = new MutationObserver(() => {
+          if (captchaContainer.children.length > 0) {
+            console.log('✅ Captcha detectado no DOM via MutationObserver');
+            captchaReady = true;
+          }
+        });
+        observer.observe(captchaContainer, { childList: true });
+      }
+
+      console.log('✅ Sistema de formulário v5.3 carregado');
+    })();
   </script>
 </body>
 </html>
