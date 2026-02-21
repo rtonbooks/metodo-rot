@@ -1695,7 +1695,7 @@
   
   <script>
     // ============================================
-    // MÉTODO ROT - MAIN SCRIPT v6.0 (SOLUÇÃO DEFINITIVA)
+    // MÉTODO ROT - MAIN SCRIPT v7.0 (SOLUÇÃO DEFINITIVA)
     // ============================================
 
     // ===== CONFIGURAÇÕES GLOBAIS =====
@@ -1703,26 +1703,45 @@
     const LIST_ID = 5;
     const SITE_KEY = '6Lc172ssAAAAAC-DlDHwMqJfKJs6Po_0u-isLhEl';
 
-    // ===== ESTADO GLOBAL (FORA DE QUALQUER FUNÇÃO) =====
+    // ===== ESTADO GLOBAL =====
     let captchaWidgetId = null;
     let captchaResponse = null;
     let captchaReady = false;
+    let captchaRendered = false; // Flag para evitar re-render
 
-    // ===== FUNÇÃO CALLBACK DO GOOGLE (GLOBAL) =====
+    // ===== FUNÇÃO PARA ENCONTRAR WIDGET ID NO DOM =====
+    function findWidgetIdFromDOM() {
+      // Tenta encontrar o iframe do reCAPTCHA
+      const iframes = document.querySelectorAll('iframe[src*="google.com/recaptcha"]');
+      if (iframes.length > 0) {
+        console.log('🔍 CAPTCHA - Iframe encontrado no DOM');
+        return 0; // Geralmente é o primeiro
+      }
+      return null;
+    }
+
+    // ===== FUNÇÃO CALLBACK DO GOOGLE =====
     window.onCaptchaSuccess = function(response) {
       console.log('✅ CAPTCHA - Callback executado com resposta:', response ? 'OK' : 'VAZIO');
       captchaResponse = response;
       captchaReady = true;
-      console.log('📌 CAPTCHA - Estado atualizado:', { 
-        widgetId: captchaWidgetId, 
-        response: response ? 'OK' : 'VAZIO' 
-      });
+      
+      // Se perdeu o widgetId, tenta recuperar
+      if (!captchaWidgetId) {
+        captchaWidgetId = findWidgetIdFromDOM();
+        console.log('🔄 CAPTCHA - WidgetId recuperado:', captchaWidgetId);
+      }
     };
 
-    // ===== RENDERIZAR CAPTCHA =====
+    // ===== RENDERIZAR CAPTCHA (COM PROTEÇÃO) =====
     function renderCaptcha() {
+      // PREVENIR RE-RENDERIZAÇÃO
+      if (captchaRendered) {
+        console.log('✅ CAPTCHA - Já renderizado, ignorando');
+        return true;
+      }
+
       const container = document.getElementById('captcha-container');
-      
       if (!container) {
         console.error('❌ CAPTCHA - Container não encontrado');
         return false;
@@ -1733,24 +1752,34 @@
         return false;
       }
 
-      try {
-        captchaWidgetId = grecaptcha.render(container, {
-          'sitekey': SITE_KEY,
-          'theme': 'dark',
-          'size': 'normal',
-          'callback': window.onCaptchaSuccess,
-          'expired-callback': function() {
-            console.log('⚠️ CAPTCHA - Expirado');
-            captchaReady = false;
-            captchaResponse = null;
-          }
-        });
-
-        console.log('✅ CAPTCHA - Renderizado ID:', captchaWidgetId);
+      // Limpa apenas se necessário
+      if (container.children.length === 0) {
+        try {
+          captchaWidgetId = grecaptcha.render(container, {
+            'sitekey': SITE_KEY,
+            'theme': 'dark',
+            'size': 'normal',
+            'callback': window.onCaptchaSuccess,
+            'expired-callback': function() {
+              console.log('⚠️ CAPTCHA - Expirado');
+              captchaReady = false;
+              captchaResponse = null;
+            }
+          });
+          
+          captchaRendered = true;
+          console.log('✅ CAPTCHA - Renderizado ID:', captchaWidgetId);
+          return true;
+        } catch (error) {
+          console.error('❌ CAPTCHA - Erro ao renderizar:', error);
+          return false;
+        }
+      } else {
+        // Já tem filhos, considera renderizado
+        captchaRendered = true;
+        captchaWidgetId = captchaWidgetId || findWidgetIdFromDOM() || 0;
+        console.log('✅ CAPTCHA - Já existente no DOM');
         return true;
-      } catch (error) {
-        console.error('❌ CAPTCHA - Erro ao renderizar:', error);
-        return false;
       }
     }
 
@@ -1758,16 +1787,15 @@
     window.onloadCallback = function() {
       console.log('🔵 CAPTCHA - Callback do Google acionado');
       
-      // Tenta renderizar até 10 vezes
+      // Tenta renderizar até 3 vezes apenas
       let attempts = 0;
-      const maxAttempts = 10;
+      const maxAttempts = 3;
       
       function tryRender() {
         if (attempts >= maxAttempts) {
           console.error('❌ CAPTCHA - Máximo de tentativas atingido');
           return;
         }
-        
         attempts++;
         console.log(`🔄 CAPTCHA - Tentativa ${attempts}/${maxAttempts}`);
         
@@ -1916,7 +1944,7 @@
       if (bgImage) bgImage.classList.add('fallback');
     };
 
-    // ===== FORMULÁRIO PRINCIPAL (SIMPLES E DIRETO) =====
+    // ===== FORMULÁRIO PRINCIPAL =====
     const brevoForm = document.getElementById('brevoForm');
     const nomeInput = document.getElementById('nome');
     const emailInput = document.getElementById('email');
@@ -1945,40 +1973,53 @@
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
 
-    // Função para verificar captcha (agora acessa variáveis globais)
-    function checkCaptcha() {
+    // Função para obter resposta do captcha (MÚLTIPLAS ESTRATÉGIAS)
+    function getCaptchaResponse() {
       console.log('🔍 VERIFICANDO CAPTCHA - Estado atual:', {
         widgetId: captchaWidgetId,
         response: captchaResponse ? 'OK' : 'NULO',
         ready: captchaReady
       });
 
-      // Se não tem widgetId, tenta obter do DOM
-      if (!captchaWidgetId) {
-        console.log('⚠️ Widget ID não encontrado, verificando DOM...');
-        const container = document.getElementById('captcha-container');
-        if (container && container.children.length > 0) {
-          console.log('✅ Captcha encontrado no DOM, mas widgetId não registrado');
-        }
-      }
-
-      // Tenta obter resposta direto da API
+      // TENTATIVA 1: Resposta direta da API
       if (captchaWidgetId && typeof grecaptcha !== 'undefined') {
         try {
-          const directResponse = grecaptcha.getResponse(captchaWidgetId);
-          if (directResponse) {
-            console.log('✅ Resposta direta da API obtida');
-            return directResponse;
+          const direct = grecaptcha.getResponse(captchaWidgetId);
+          if (direct) {
+            console.log('✅ Resposta direta obtida');
+            return direct;
           }
         } catch (e) {
           console.log('❌ Erro ao obter resposta direta:', e);
         }
       }
 
-      // Usa a resposta salva no callback
+      // TENTATIVA 2: Recuperar widgetId do DOM
+      if (!captchaWidgetId) {
+        captchaWidgetId = findWidgetIdFromDOM();
+        if (captchaWidgetId !== null) {
+          console.log('🔄 WidgetId recuperado do DOM:', captchaWidgetId);
+          // Tenta novamente com o novo ID
+          try {
+            const direct = grecaptcha.getResponse(captchaWidgetId);
+            if (direct) return direct;
+          } catch (e) {}
+        }
+      }
+
+      // TENTATIVA 3: Resposta salva no callback
       if (captchaResponse) {
         console.log('✅ Usando resposta salva do callback');
         return captchaResponse;
+      }
+
+      // TENTATIVA 4: Buscar em textareas (último recurso)
+      const textareas = document.querySelectorAll('textarea[data-callback]');
+      for (let ta of textareas) {
+        if (ta.value) {
+          console.log('✅ Resposta encontrada em textarea');
+          return ta.value;
+        }
       }
 
       return null;
@@ -2008,7 +2049,7 @@
         await new Promise(resolve => setTimeout(resolve, 500));
 
         // Verifica captcha
-        const finalResponse = checkCaptcha();
+        const finalResponse = getCaptchaResponse();
 
         console.log('📊 RESULTADO FINAL:', {
           temResposta: !!finalResponse,
@@ -2086,13 +2127,14 @@
         container: !!document.getElementById('captcha-container'),
         filhos: document.getElementById('captcha-container')?.children.length || 0,
         widgetId: captchaWidgetId,
+        rendered: captchaRendered,
         captchaReady: captchaReady,
         temResposta: !!captchaResponse,
         grecaptcha: typeof grecaptcha !== 'undefined'
       });
-    }, 3000);
+    }, 2000);
 
-    console.log('✅ SISTEMA v6.0 carregado - Tudo global');
+    console.log('✅ SISTEMA v7.0 carregado - Solução definitiva');
   </script>
 </body>
 </html>
