@@ -1,24 +1,17 @@
 // netlify/functions/brevo-proxy.js
-// VERSÃO CORRIGIDA - com CORS funcionando
-
-const BREVO_API_KEY = process.env.BREVO_API_KEY;
-const BREVO_API_URL = 'https://api.brevo.com/v3/contacts';
+// VERSÃO SUPER SIMPLES - TESTE
 
 exports.handler = async (event) => {
-  console.log('🔵 Proxy function iniciada');
-  
-  // ===== CABEÇALHOS CORS (o "crachá" que faltava) =====
+  // Headers CORS - essenciais
   const headers = {
-    'Access-Control-Allow-Origin': '*',           // Permite qualquer site
-    'Access-Control-Allow-Headers': 'Content-Type', // Permite headers específicos
-    'Access-Control-Allow-Methods': 'POST, OPTIONS', // Permite métodos
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Content-Type': 'application/json'
   };
 
-  // ===== RESPOSTA PARA PREFLIGHT (REQUISIÇÃO OPTIONS) =====
-  // O navegador sempre pergunta "pode?" antes de enviar
+  // Responder OPTIONS (preflight)
   if (event.httpMethod === 'OPTIONS') {
-    console.log('🔵 Respondendo preflight OPTIONS');
     return {
       statusCode: 200,
       headers,
@@ -26,7 +19,7 @@ exports.handler = async (event) => {
     };
   }
 
-  // ===== SÓ ACEITA POST =====
+  // Apenas POST
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -36,40 +29,18 @@ exports.handler = async (event) => {
   }
 
   try {
-    // ===== PROCESSA O FORMULÁRIO =====
+    // Dados recebidos
     const formData = JSON.parse(event.body);
-    console.log('📦 Dados recebidos:', formData.email);
+    console.log('📦 Dados:', formData.email);
 
-    // ===== ENVIA PARA O BREVO =====
-    const response = await fetch(BREVO_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'api-key': BREVO_API_KEY
-      },
-      body: JSON.stringify({
-        email: formData.email,
-        attributes: {
-          NOME: formData.attributes?.NOME || '',
-          FIRSTNAME: formData.attributes?.NOME || '',
-          SOURCE: 'Site Método RoT'
-        },
-        listIds: formData.listIds || [5],
-        updateEnabled: true
-      })
-    });
-
-    const data = await response.json();
-    console.log('📬 Resposta Brevo:', response.status);
-
-    // ===== RESPOSTA COM OS CABEÇALHOS CORS =====
+    // RESPOSTA DE TESTE (simula sucesso)
     return {
-      statusCode: response.status,
-      headers, // AQUI ESTÁ O SEGREDO! Sempre incluir os headers
+      statusCode: 200,
+      headers, // IMPORTANTE: incluir os headers
       body: JSON.stringify({
-        success: response.ok,
-        message: response.ok ? 'Lead adicionado com sucesso' : 'Erro no Brevo',
-        data: data
+        success: true,
+        message: 'Lead adicionado com sucesso (teste)',
+        data: { id: 123 }
       })
     };
 
