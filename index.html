@@ -979,7 +979,7 @@
       color: var(--accent);
     }
 
-    /* ===== NEWSLETTER FORM - VERSÃO FINAL v5.8 ===== */
+    /* ===== NEWSLETTER FORM ===== */
     .footer-form {
       display: flex;
       flex-direction: column;
@@ -1695,31 +1695,114 @@
   
   <script>
     // ============================================
-    // MÉTODO ROT - MAIN SCRIPT v5.8 (CORRIGIDO)
+    // MÉTODO ROT - MAIN SCRIPT v6.0 (SOLUÇÃO DEFINITIVA)
     // ============================================
-    
-    // EMAIL MASKING - contato@metodorot.com (exibido) → rtonbooks@gmail.com (real)
-    (function() {
-        const realUser = 'rtonbooks';
-        const realDomain = 'gmail.com';
-        const realEmail = realUser + '@' + realDomain;
-        
-        const displayUser = 'contato';
-        const displayDomain = 'metodorot.com';
-        const displayEmail = displayUser + '@' + displayDomain;
-        
-        const container = document.getElementById('contact-email-container');
-        if (container) {
-            container.innerHTML = `
-                <i class="fas fa-envelope" aria-hidden="true"></i>
-                <a href="mailto:${realEmail}" style="color: #94a3b8; text-decoration: none;">
-                    ${displayEmail}
-                </a>
-            `;
+
+    // ===== CONFIGURAÇÕES GLOBAIS =====
+    const PROXY_URL = '/.netlify/functions/brevo-proxy';
+    const LIST_ID = 5;
+    const SITE_KEY = '6Lc172ssAAAAAC-DlDHwMqJfKJs6Po_0u-isLhEl';
+
+    // ===== ESTADO GLOBAL (FORA DE QUALQUER FUNÇÃO) =====
+    let captchaWidgetId = null;
+    let captchaResponse = null;
+    let captchaReady = false;
+
+    // ===== FUNÇÃO CALLBACK DO GOOGLE (GLOBAL) =====
+    window.onCaptchaSuccess = function(response) {
+      console.log('✅ CAPTCHA - Callback executado com resposta:', response ? 'OK' : 'VAZIO');
+      captchaResponse = response;
+      captchaReady = true;
+      console.log('📌 CAPTCHA - Estado atualizado:', { 
+        widgetId: captchaWidgetId, 
+        response: response ? 'OK' : 'VAZIO' 
+      });
+    };
+
+    // ===== RENDERIZAR CAPTCHA =====
+    function renderCaptcha() {
+      const container = document.getElementById('captcha-container');
+      
+      if (!container) {
+        console.error('❌ CAPTCHA - Container não encontrado');
+        return false;
+      }
+
+      if (typeof grecaptcha === 'undefined') {
+        console.error('❌ CAPTCHA - API não carregada');
+        return false;
+      }
+
+      try {
+        captchaWidgetId = grecaptcha.render(container, {
+          'sitekey': SITE_KEY,
+          'theme': 'dark',
+          'size': 'normal',
+          'callback': window.onCaptchaSuccess,
+          'expired-callback': function() {
+            console.log('⚠️ CAPTCHA - Expirado');
+            captchaReady = false;
+            captchaResponse = null;
+          }
+        });
+
+        console.log('✅ CAPTCHA - Renderizado ID:', captchaWidgetId);
+        return true;
+      } catch (error) {
+        console.error('❌ CAPTCHA - Erro ao renderizar:', error);
+        return false;
+      }
+    }
+
+    // ===== CALLBACK PRINCIPAL DO GOOGLE =====
+    window.onloadCallback = function() {
+      console.log('🔵 CAPTCHA - Callback do Google acionado');
+      
+      // Tenta renderizar até 10 vezes
+      let attempts = 0;
+      const maxAttempts = 10;
+      
+      function tryRender() {
+        if (attempts >= maxAttempts) {
+          console.error('❌ CAPTCHA - Máximo de tentativas atingido');
+          return;
         }
+        
+        attempts++;
+        console.log(`🔄 CAPTCHA - Tentativa ${attempts}/${maxAttempts}`);
+        
+        if (renderCaptcha()) {
+          console.log('✅ CAPTCHA - Renderizado com sucesso');
+        } else {
+          setTimeout(tryRender, 500);
+        }
+      }
+      
+      tryRender();
+    };
+
+    // ===== EMAIL MASKING =====
+    (function() {
+      const realUser = 'rtonbooks';
+      const realDomain = 'gmail.com';
+      const realEmail = realUser + '@' + realDomain;
+      
+      const displayUser = 'contato';
+      const displayDomain = 'metodorot.com';
+      const displayEmail = displayUser + '@' + displayDomain;
+      
+      const container = document.getElementById('contact-email-container');
+      if (container) {
+        container.innerHTML = `
+          <i class="fas fa-envelope" aria-hidden="true"></i>
+          <a href="mailto:${realEmail}" style="color: #94a3b8; text-decoration: none;">
+            ${displayEmail}
+          </a>
+        `;
+      }
     })();
-    
-    // AOS INIT
+
+    // ===== AOS INIT =====
     AOS.init({
       duration: 800,
       once: true,
@@ -1727,7 +1810,7 @@
       easing: 'cubic-bezier(0.23, 1, 0.32, 1)'
     });
 
-    // TYPING EFFECT
+    // ===== TYPING EFFECT =====
     const dynamicText = document.getElementById('dynamicText');
     const phrases = [
       { text: 'GANHE DINHEIRO DE CASA', color: '#c96e3a' },
@@ -1771,10 +1854,10 @@
 
     typeEffect();
 
-    // HEADER SCROLL EFFECT
+    // ===== HEADER SCROLL =====
     const header = document.getElementById('header');
     const scrollIndicator = document.getElementById('scrollIndicator');
-    
+
     window.addEventListener('scroll', () => {
       const scrollY = window.scrollY;
       
@@ -1787,14 +1870,13 @@
       }
     });
 
-    // SCROLL INDICATOR CLICK
     if (scrollIndicator) {
       scrollIndicator.addEventListener('click', () => {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
       });
     }
 
-    // HAMBURGER MENU
+    // ===== HAMBURGER MENU =====
     const hamburger = document.getElementById('hamburger');
     const menuOverlay = document.getElementById('menuOverlay');
 
@@ -1814,7 +1896,7 @@
       });
     }
 
-    // HERO BUTTON
+    // ===== HERO BUTTON =====
     const heroButton = document.getElementById('heroButton');
     if (heroButton) {
       heroButton.addEventListener('click', () => {
@@ -1822,307 +1904,195 @@
       });
     }
 
-    // BACKGROUND IMAGE FALLBACK
+    // ===== BACKGROUND FALLBACK =====
     const bgImage = document.getElementById('bgImage');
     const img = new Image();
     img.src = 'https://i.postimg.cc/hvMhVQJ9/person-celebrating-with-arm-raised.jpg';
     img.onload = () => {
-      console.log('✅ Background image loaded');
+      console.log('✅ BACKGROUND - Imagem carregada');
     };
     img.onerror = () => {
-      console.log('⚠️ Background image failed, using fallback');
+      console.log('⚠️ BACKGROUND - Falha, usando fallback');
       if (bgImage) bgImage.classList.add('fallback');
     };
 
-    // ============================================
-    // BREVO NEWSLETTER FORM - VERSÃO v5.8 (CORRIGIDA)
-    // ============================================
+    // ===== FORMULÁRIO PRINCIPAL (SIMPLES E DIRETO) =====
+    const brevoForm = document.getElementById('brevoForm');
+    const nomeInput = document.getElementById('nome');
+    const emailInput = document.getElementById('email');
+    const submitBtn = document.getElementById('submitBtn');
+    const formMessage = document.getElementById('formMessage');
 
-    (function() {
-      // Configurações
-      const PROXY_URL = '/.netlify/functions/brevo-proxy';
-      const LIST_ID = 5;
-      const SITE_KEY = '6Lc172ssAAAAAC-DlDHwMqJfKJs6Po_0u-isLhEl';
-      
-      // Elementos do DOM
-      const brevoForm = document.getElementById('brevoForm');
-      const nomeInput = document.getElementById('nome');
-      const emailInput = document.getElementById('email');
-      const submitBtn = document.getElementById('submitBtn');
-      const formMessage = document.getElementById('formMessage');
-      const captchaContainer = document.getElementById('captcha-container');
+    function showMessage(message, type) {
+      if (!formMessage) return;
+      formMessage.textContent = message;
+      formMessage.className = `footer-message ${type} show`;
+      setTimeout(() => formMessage.classList.remove('show'), 5000);
+    }
 
-      // ===== ESTADO GLOBAL DO CAPTCHA (MAIS ROBUSTO) =====
-      window.captchaState = {
-        widgetId: null,
-        isReady: false,
-        lastResponse: null,
-        responseTime: null
-      };
+    function setLoading(loading) {
+      if (!submitBtn) return;
+      if (loading) {
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+      } else {
+        submitBtn.classList.remove('loading');
+        submitBtn.disabled = false;
+      }
+    }
 
-      // ===== FUNÇÃO DE CALLBACK DO GOOGLE =====
-      window.onCaptchaSuccess = function(response) {
-        console.log('✅ Captcha preenchido com sucesso (callback global)', response ? 'com resposta' : 'sem resposta');
-        window.captchaState.isReady = true;
-        window.captchaState.lastResponse = response;
-        window.captchaState.responseTime = Date.now();
-        
-        // Log para debug
-        console.log('📌 Estado atualizado:', {
-          isReady: true,
-          response: response ? 'OK' : 'VAZIO',
-          timestamp: new Date().toLocaleTimeString()
-        });
-      };
+    function validateEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
 
-      // ===== RENDERIZAR CAPTCHA =====
-      function renderCaptcha() {
-        if (!captchaContainer) {
-          console.error('❌ Container não encontrado');
-          return false;
-        }
+    // Função para verificar captcha (agora acessa variáveis globais)
+    function checkCaptcha() {
+      console.log('🔍 VERIFICANDO CAPTCHA - Estado atual:', {
+        widgetId: captchaWidgetId,
+        response: captchaResponse ? 'OK' : 'NULO',
+        ready: captchaReady
+      });
 
-        if (typeof grecaptcha === 'undefined' || typeof grecaptcha.render !== 'function') {
-          console.error('❌ API do reCAPTCHA não disponível');
-          return false;
-        }
-
-        captchaContainer.innerHTML = '';
-
-        try {
-          window.captchaState.widgetId = grecaptcha.render(captchaContainer, {
-            'sitekey': SITE_KEY,
-            'theme': 'dark',
-            'size': 'normal',
-            'callback': window.onCaptchaSuccess,
-            'expired-callback': function() {
-              console.log('⚠️ Captcha expirado');
-              window.captchaState.isReady = false;
-              window.captchaState.lastResponse = null;
-            }
-          });
-
-          console.log('✅ reCAPTCHA renderizado ID:', window.captchaState.widgetId);
-          
-          setTimeout(() => {
-            if (captchaContainer.children.length > 0) {
-              console.log('✅ Captcha visível no DOM');
-            }
-          }, 500);
-
-          return true;
-
-        } catch (error) {
-          console.error('❌ Erro ao renderizar:', error);
-          return false;
+      // Se não tem widgetId, tenta obter do DOM
+      if (!captchaWidgetId) {
+        console.log('⚠️ Widget ID não encontrado, verificando DOM...');
+        const container = document.getElementById('captcha-container');
+        if (container && container.children.length > 0) {
+          console.log('✅ Captcha encontrado no DOM, mas widgetId não registrado');
         }
       }
 
-      // ===== SISTEMA DE RETRY =====
-      let renderAttempts = 0;
-      const MAX_ATTEMPTS = 10;
+      // Tenta obter resposta direto da API
+      if (captchaWidgetId && typeof grecaptcha !== 'undefined') {
+        try {
+          const directResponse = grecaptcha.getResponse(captchaWidgetId);
+          if (directResponse) {
+            console.log('✅ Resposta direta da API obtida');
+            return directResponse;
+          }
+        } catch (e) {
+          console.log('❌ Erro ao obter resposta direta:', e);
+        }
+      }
 
-      function attemptRenderCaptcha() {
-        if (renderAttempts >= MAX_ATTEMPTS) {
-          console.error('❌ Máximo de tentativas atingido');
+      // Usa a resposta salva no callback
+      if (captchaResponse) {
+        console.log('✅ Usando resposta salva do callback');
+        return captchaResponse;
+      }
+
+      return null;
+    }
+
+    // Evento de submit
+    if (brevoForm) {
+      brevoForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        console.log('📝 FORMULÁRIO - Submetido');
+
+        const nome = nomeInput?.value.trim() || '';
+        const email = emailInput?.value.trim() || '';
+
+        if (!nome || !email) {
+          showMessage('Preencha todos os campos!', 'error');
           return;
         }
 
-        renderAttempts++;
-        console.log(`🔄 Tentativa ${renderAttempts} de renderizar captcha...`);
-
-        if (renderCaptcha()) {
-          return true;
+        if (!validateEmail(email)) {
+          showMessage('Email inválido!', 'error');
+          return;
         }
 
-        setTimeout(attemptRenderCaptcha, 500);
-      }
+        // Aguarda um pouco para garantir
+        console.log('⏳ Aguardando 500ms...');
+        await new Promise(resolve => setTimeout(resolve, 500));
 
-      // ===== CALLBACK PRINCIPAL =====
-      window.onloadCallback = function() {
-        console.log('🔵 Callback do reCAPTCHA');
-        attemptRenderCaptcha();
-      };
+        // Verifica captcha
+        const finalResponse = checkCaptcha();
 
-      // ===== FUNÇÕES AUXILIARES =====
-      function showMessage(message, type) {
-        if (!formMessage) return;
-        formMessage.textContent = message;
-        formMessage.className = `footer-message ${type} show`;
-        setTimeout(() => formMessage.classList.remove('show'), 5000);
-      }
+        console.log('📊 RESULTADO FINAL:', {
+          temResposta: !!finalResponse,
+          resposta: finalResponse ? 'OK' : 'NENHUMA',
+          widgetId: captchaWidgetId,
+          captchaReady: captchaReady
+        });
 
-      function setLoading(loading) {
-        if (!submitBtn) return;
-        if (loading) {
-          submitBtn.classList.add('loading');
-          submitBtn.disabled = true;
-        } else {
-          submitBtn.classList.remove('loading');
-          submitBtn.disabled = false;
+        if (!finalResponse) {
+          showMessage('Por favor, confirme que você não é um robô', 'error');
+          
+          // Tenta resetar
+          if (captchaWidgetId && typeof grecaptcha !== 'undefined') {
+            try {
+              grecaptcha.reset(captchaWidgetId);
+            } catch (e) {}
+          }
+          return;
         }
-      }
 
-      function validateEmail(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-      }
+        console.log('✅ CAPTCHA OK - Enviando formulário');
+        setLoading(true);
 
-      // ===== FUNÇÃO CORRIGIDA PARA OBTER RESPOSTA =====
-      function getCaptchaResponse() {
-        if (!window.captchaState.widgetId || typeof grecaptcha === 'undefined') {
-          console.log('❌ Widget não disponível');
-          return null;
-        }
-        
         try {
-          // Tenta obter resposta de 3 formas diferentes
-          const response1 = grecaptcha.getResponse(window.captchaState.widgetId);
-          const response2 = window.captchaState.lastResponse;
-          
-          console.log('🔍 Verificando captcha:', {
-            getResponse: response1 ? 'OK' : 'VAZIO',
-            lastResponse: response2 ? 'OK' : 'VAZIO',
-            isReady: window.captchaState.isReady,
-            timestamp: window.captchaState.responseTime ? new Date(window.captchaState.responseTime).toLocaleTimeString() : 'nunca'
+          const payload = {
+            email: email,
+            attributes: {
+              NOME: nome,
+              FIRSTNAME: nome,
+              SOURCE: 'Site Método RoT'
+            },
+            listIds: [LIST_ID],
+            updateEnabled: true,
+            'g-recaptcha-response': finalResponse
+          };
+
+          console.log('📤 Enviando para proxy...');
+          const response = await fetch(PROXY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
           });
-          
-          // Se tiver resposta direta da API, usa ela
-          if (response1) {
-            return response1;
-          }
-          
-          // Se não, tenta usar a última resposta salva
-          if (response2) {
-            return response2;
-          }
-          
-          return null;
-        } catch (e) {
-          console.error('Erro ao obter resposta:', e);
-          return null;
-        }
-      }
 
-      // ===== SUBMIT =====
-      if (brevoForm) {
-        brevoForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          console.log('📝 Formulário submetido');
+          const data = await response.json();
+          console.log('📥 Resposta do proxy:', data);
 
-          const nome = nomeInput?.value.trim() || '';
-          const email = emailInput?.value.trim() || '';
-
-          if (!nome || !email) {
-            showMessage('Preencha todos os campos!', 'error');
-            return;
-          }
-
-          if (!validateEmail(email)) {
-            showMessage('Email inválido!', 'error');
-            return;
-          }
-
-          // VERIFICAÇÃO ANTES DE ENVIAR (MAIS LENTA PARA GARANTIR)
-          console.log('⏳ Aguardando processamento do captcha...');
-          await new Promise(resolve => setTimeout(resolve, 500)); // 500ms
-          
-          const captchaResponse = getCaptchaResponse();
-          
-          console.log('📊 Resultado final:', {
-            temResposta: !!captchaResponse,
-            resposta: captchaResponse ? 'OK' : 'NENHUMA',
-            isReady: window.captchaState.isReady
-          });
-          
-          if (!captchaResponse) {
-            showMessage('Por favor, confirme que você não é um robô', 'error');
+          if (data.success) {
+            showMessage('✓ Inscrito com sucesso!', 'success');
+            brevoForm.reset();
             
-            // Tenta forçar o captcha a resetar
-            if (window.captchaState.widgetId && typeof grecaptcha !== 'undefined') {
-              grecaptcha.reset(window.captchaState.widgetId);
-              window.captchaState.isReady = false;
-              window.captchaState.lastResponse = null;
+            // Reseta captcha
+            if (captchaWidgetId && typeof grecaptcha !== 'undefined') {
+              try {
+                grecaptcha.reset(captchaWidgetId);
+                captchaReady = false;
+                captchaResponse = null;
+              } catch (e) {}
             }
-            return;
+          } else {
+            throw new Error(data.message || 'Erro no servidor');
           }
 
-          console.log('✅ Captcha OK, enviando formulário');
-          setLoading(true);
+        } catch (error) {
+          console.error('❌ Erro:', error);
+          showMessage('✗ Erro. Tente novamente.', 'error');
+        } finally {
+          setLoading(false);
+        }
+      });
+    }
 
-          try {
-            const payload = {
-              email: email,
-              attributes: {
-                NOME: nome,
-                FIRSTNAME: nome,
-                SOURCE: 'Site Método RoT'
-              },
-              listIds: [LIST_ID],
-              updateEnabled: true,
-              'g-recaptcha-response': captchaResponse
-            };
+    // ===== DIAGNÓSTICO =====
+    setTimeout(() => {
+      console.log('🔍 DIAGNÓSTICO FINAL:', {
+        container: !!document.getElementById('captcha-container'),
+        filhos: document.getElementById('captcha-container')?.children.length || 0,
+        widgetId: captchaWidgetId,
+        captchaReady: captchaReady,
+        temResposta: !!captchaResponse,
+        grecaptcha: typeof grecaptcha !== 'undefined'
+      });
+    }, 3000);
 
-            console.log('📤 Enviando para proxy...');
-            const response = await fetch(PROXY_URL, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-
-            const data = await response.json();
-            console.log('📥 Resposta do proxy:', data);
-
-            if (data.success) {
-              showMessage('✓ Inscrito com sucesso!', 'success');
-              brevoForm.reset();
-              
-              // Reseta o captcha
-              if (window.captchaState.widgetId && typeof grecaptcha !== 'undefined') {
-                grecaptcha.reset(window.captchaState.widgetId);
-                window.captchaState.isReady = false;
-                window.captchaState.lastResponse = null;
-              }
-            } else {
-              throw new Error(data.message || 'Erro no servidor');
-            }
-
-          } catch (error) {
-            console.error('❌ Erro:', error);
-            showMessage('✗ Erro. Tente novamente.', 'error');
-          } finally {
-            setLoading(false);
-          }
-        });
-      }
-
-      // ===== MUTATION OBSERVER =====
-      if (captchaContainer && window.MutationObserver) {
-        const observer = new MutationObserver(() => {
-          if (captchaContainer.children.length > 0) {
-            console.log('✅ Captcha detectado no DOM');
-          }
-        });
-        observer.observe(captchaContainer, { childList: true });
-      }
-
-      // ===== DIAGNÓSTICO MAIS DETALHADO =====
-      setTimeout(() => {
-        const resposta = window.captchaState.widgetId ? 
-          grecaptcha?.getResponse(window.captchaState.widgetId) : null;
-          
-        console.log('🔍 Diagnóstico completo:', {
-          container: !!captchaContainer,
-          filhos: captchaContainer?.children.length,
-          widgetId: window.captchaState.widgetId,
-          isReady: window.captchaState.isReady,
-          temResposta: !!resposta,
-          ultimaResposta: window.captchaState.lastResponse ? 'guardada' : 'nenhuma',
-          timestamp: window.captchaState.responseTime ? new Date(window.captchaState.responseTime).toLocaleTimeString() : 'nunca'
-        });
-      }, 3000);
-
-      console.log('✅ Sistema de formulário v5.8 carregado');
-    })();
+    console.log('✅ SISTEMA v6.0 carregado - Tudo global');
   </script>
 </body>
 </html>
