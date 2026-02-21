@@ -979,7 +979,7 @@
       color: var(--accent);
     }
 
-    /* ===== NEWSLETTER FORM - VERSÃO FINAL v5.7 ===== */
+    /* ===== NEWSLETTER FORM - VERSÃO FINAL v5.8 ===== */
     .footer-form {
       display: flex;
       flex-direction: column;
@@ -1695,7 +1695,7 @@
   
   <script>
     // ============================================
-    // MÉTODO ROT - MAIN SCRIPT v5.7 (CAPTCHA CORRIGIDO)
+    // MÉTODO ROT - MAIN SCRIPT v5.8 (CORRIGIDO)
     // ============================================
     
     // EMAIL MASKING - contato@metodorot.com (exibido) → rtonbooks@gmail.com (real)
@@ -1835,7 +1835,7 @@
     };
 
     // ============================================
-    // BREVO NEWSLETTER FORM - VERSÃO v5.7 (CORRIGIDA)
+    // BREVO NEWSLETTER FORM - VERSÃO v5.8 (CORRIGIDA)
     // ============================================
 
     (function() {
@@ -1852,18 +1852,27 @@
       const formMessage = document.getElementById('formMessage');
       const captchaContainer = document.getElementById('captcha-container');
 
-      // ===== ESTADO GLOBAL DO CAPTCHA =====
+      // ===== ESTADO GLOBAL DO CAPTCHA (MAIS ROBUSTO) =====
       window.captchaState = {
         widgetId: null,
         isReady: false,
-        lastResponse: null
+        lastResponse: null,
+        responseTime: null
       };
 
       // ===== FUNÇÃO DE CALLBACK DO GOOGLE =====
       window.onCaptchaSuccess = function(response) {
-        console.log('✅ Captcha preenchido com sucesso (callback global)');
+        console.log('✅ Captcha preenchido com sucesso (callback global)', response ? 'com resposta' : 'sem resposta');
         window.captchaState.isReady = true;
         window.captchaState.lastResponse = response;
+        window.captchaState.responseTime = Date.now();
+        
+        // Log para debug
+        console.log('📌 Estado atualizado:', {
+          isReady: true,
+          response: response ? 'OK' : 'VAZIO',
+          timestamp: new Date().toLocaleTimeString()
+        });
       };
 
       // ===== RENDERIZAR CAPTCHA =====
@@ -1961,6 +1970,7 @@
       // ===== FUNÇÃO CORRIGIDA PARA OBTER RESPOSTA =====
       function getCaptchaResponse() {
         if (!window.captchaState.widgetId || typeof grecaptcha === 'undefined') {
+          console.log('❌ Widget não disponível');
           return null;
         }
         
@@ -1972,13 +1982,23 @@
           console.log('🔍 Verificando captcha:', {
             getResponse: response1 ? 'OK' : 'VAZIO',
             lastResponse: response2 ? 'OK' : 'VAZIO',
-            isReady: window.captchaState.isReady
+            isReady: window.captchaState.isReady,
+            timestamp: window.captchaState.responseTime ? new Date(window.captchaState.responseTime).toLocaleTimeString() : 'nunca'
           });
           
-          // Retorna a primeira resposta válida
-          return response1 || response2 || null;
+          // Se tiver resposta direta da API, usa ela
+          if (response1) {
+            return response1;
+          }
+          
+          // Se não, tenta usar a última resposta salva
+          if (response2) {
+            return response2;
+          }
+          
+          return null;
         } catch (e) {
-          console.error('Erro:', e);
+          console.error('Erro ao obter resposta:', e);
           return null;
         }
       }
@@ -2002,22 +2022,31 @@
             return;
           }
 
-          // VERIFICAÇÃO ANTES DE ENVIAR
-          await new Promise(resolve => setTimeout(resolve, 200)); // Aguarda 200ms
+          // VERIFICAÇÃO ANTES DE ENVIAR (MAIS LENTA PARA GARANTIR)
+          console.log('⏳ Aguardando processamento do captcha...');
+          await new Promise(resolve => setTimeout(resolve, 500)); // 500ms
           
           const captchaResponse = getCaptchaResponse();
           
           console.log('📊 Resultado final:', {
             temResposta: !!captchaResponse,
-            resposta: captchaResponse ? 'OK' : 'NENHUMA'
+            resposta: captchaResponse ? 'OK' : 'NENHUMA',
+            isReady: window.captchaState.isReady
           });
           
           if (!captchaResponse) {
             showMessage('Por favor, confirme que você não é um robô', 'error');
+            
+            // Tenta forçar o captcha a resetar
+            if (window.captchaState.widgetId && typeof grecaptcha !== 'undefined') {
+              grecaptcha.reset(window.captchaState.widgetId);
+              window.captchaState.isReady = false;
+              window.captchaState.lastResponse = null;
+            }
             return;
           }
 
-          console.log('✅ Captcha OK');
+          console.log('✅ Captcha OK, enviando formulário');
           setLoading(true);
 
           try {
@@ -2033,6 +2062,7 @@
               'g-recaptcha-response': captchaResponse
             };
 
+            console.log('📤 Enviando para proxy...');
             const response = await fetch(PROXY_URL, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -2040,18 +2070,20 @@
             });
 
             const data = await response.json();
-            console.log('📥 Proxy:', data);
+            console.log('📥 Resposta do proxy:', data);
 
             if (data.success) {
               showMessage('✓ Inscrito com sucesso!', 'success');
               brevoForm.reset();
-              if (window.captchaState.widgetId) {
+              
+              // Reseta o captcha
+              if (window.captchaState.widgetId && typeof grecaptcha !== 'undefined') {
                 grecaptcha.reset(window.captchaState.widgetId);
                 window.captchaState.isReady = false;
                 window.captchaState.lastResponse = null;
               }
             } else {
-              throw new Error(data.message || 'Erro');
+              throw new Error(data.message || 'Erro no servidor');
             }
 
           } catch (error) {
@@ -2073,21 +2105,23 @@
         observer.observe(captchaContainer, { childList: true });
       }
 
-      // ===== DIAGNÓSTICO =====
+      // ===== DIAGNÓSTICO MAIS DETALHADO =====
       setTimeout(() => {
         const resposta = window.captchaState.widgetId ? 
           grecaptcha?.getResponse(window.captchaState.widgetId) : null;
           
-        console.log('🔍 Diagnóstico:', {
+        console.log('🔍 Diagnóstico completo:', {
           container: !!captchaContainer,
           filhos: captchaContainer?.children.length,
           widgetId: window.captchaState.widgetId,
           isReady: window.captchaState.isReady,
-          temResposta: !!resposta
+          temResposta: !!resposta,
+          ultimaResposta: window.captchaState.lastResponse ? 'guardada' : 'nenhuma',
+          timestamp: window.captchaState.responseTime ? new Date(window.captchaState.responseTime).toLocaleTimeString() : 'nunca'
         });
       }, 3000);
 
-      console.log('✅ Sistema de formulário v5.7 carregado');
+      console.log('✅ Sistema de formulário v5.8 carregado');
     })();
   </script>
 </body>
