@@ -979,7 +979,7 @@
       color: var(--accent);
     }
 
-    /* ===== NEWSLETTER FORM - VERSÃO CORRIGIDA COM CAPTCHA ===== */
+    /* ===== NEWSLETTER FORM - VERSÃO FINAL v5.6 ===== */
     .footer-form {
       display: flex;
       flex-direction: column;
@@ -1657,7 +1657,7 @@
               <label for="email" class="sr-only">Seu e-mail</label>
               <input type="email" class="footer-input" id="email" placeholder="Seu e-mail" required autocomplete="email">
               
-              <!-- CAPTCHA CONTAINER - VERSÃO OTIMIZADA -->
+              <!-- CAPTCHA CONTAINER - VERSÃO FINAL -->
               <div id="captcha-container"></div>
               
               <button type="submit" class="footer-button" id="submitBtn">
@@ -1695,7 +1695,7 @@
   
   <script>
     // ============================================
-    // MÉTODO ROT - MAIN SCRIPT v5.4 (CAPTCHA CORRIGIDO)
+    // MÉTODO ROT - MAIN SCRIPT v5.6 (CAPTCHA FINAL)
     // ============================================
     
     // EMAIL MASKING - contato@metodorot.com (exibido) → rtonbooks@gmail.com (real)
@@ -1835,7 +1835,7 @@
     };
 
     // ============================================
-    // BREVO NEWSLETTER FORM - VERSÃO v5.4 (CAPTCHA CORRIGIDO)
+    // BREVO NEWSLETTER FORM - VERSÃO FINAL v5.6
     // ============================================
 
     (function() {
@@ -1852,14 +1852,15 @@
       const formMessage = document.getElementById('formMessage');
       const captchaContainer = document.getElementById('captcha-container');
 
-      // Estado do captcha - OBJETO GLOBAL para garantir persistência
+      // Estado do captcha - objeto global para persistência
       window.captchaState = {
         widgetId: null,
         isReady: false,
-        lastResponse: null
+        lastResponse: null,
+        renderAttempts: 0
       };
 
-      // ===== FUNÇÃO PRINCIPAL DE RENDERIZAÇÃO DO CAPTCHA =====
+      // ===== FUNÇÃO PRINCIPAL DE RENDERIZAÇÃO =====
       function renderCaptcha() {
         if (!captchaContainer) {
           console.error('❌ Container captcha-container não encontrado');
@@ -1871,6 +1872,7 @@
           return false;
         }
 
+        // Limpa o container
         captchaContainer.innerHTML = '';
 
         try {
@@ -1879,23 +1881,12 @@
             'theme': 'dark',
             'size': 'normal',
             'callback': function(response) {
-              console.log('✅ Captcha preenchido com sucesso, response:', response ? 'OK' : 'VAZIO');
+              console.log('✅ Captcha preenchido com sucesso');
               window.captchaState.isReady = true;
               window.captchaState.lastResponse = response;
-              
-              console.log('📌 Estado atualizado:', {
-                widgetId: window.captchaState.widgetId,
-                isReady: true,
-                response: response ? 'recebida' : 'vazia'
-              });
             },
             'expired-callback': function() {
               console.log('⚠️ Captcha expirado');
-              window.captchaState.isReady = false;
-              window.captchaState.lastResponse = null;
-            },
-            'error-callback': function() {
-              console.error('❌ Erro no captcha');
               window.captchaState.isReady = false;
               window.captchaState.lastResponse = null;
             }
@@ -1903,6 +1894,7 @@
 
           console.log('✅ reCAPTCHA renderizado com ID:', window.captchaState.widgetId);
           
+          // Verifica se foi inserido no DOM
           setTimeout(() => {
             if (captchaContainer.children.length > 0) {
               console.log('✅ Captcha visível no DOM');
@@ -1917,18 +1909,17 @@
         }
       }
 
-      // ===== TENTAR RENDERIZAR CAPTCHA COM RETRY =====
-      let renderAttempts = 0;
+      // ===== SISTEMA DE RETRY =====
       const MAX_ATTEMPTS = 10;
 
       function attemptRenderCaptcha() {
-        if (renderAttempts >= MAX_ATTEMPTS) {
+        if (window.captchaState.renderAttempts >= MAX_ATTEMPTS) {
           console.error('❌ Máximo de tentativas atingido');
           return;
         }
 
-        renderAttempts++;
-        console.log(`🔄 Tentativa ${renderAttempts} de renderizar captcha...`);
+        window.captchaState.renderAttempts++;
+        console.log(`🔄 Tentativa ${window.captchaState.renderAttempts} de renderizar captcha...`);
 
         if (renderCaptcha()) {
           return true;
@@ -1970,23 +1961,22 @@
 
       function getCaptchaResponse() {
         if (!window.captchaState.widgetId || typeof grecaptcha === 'undefined') {
-          console.log('❌ Widget não disponível');
           return null;
         }
         
         try {
-          // Tenta obter resposta de duas formas
-          const response1 = grecaptcha.getResponse(window.captchaState.widgetId);
-          const response2 = window.captchaState.lastResponse;
+          // Tenta obter resposta diretamente da API
+          const response = grecaptcha.getResponse(window.captchaState.widgetId);
           
-          console.log('🔍 Verificando captcha:', {
-            getResponse: response1 ? 'OK' : 'VAZIO',
-            lastResponse: response2 ? 'OK' : 'VAZIO',
-            isReady: window.captchaState.isReady
-          });
+          // Se tiver resposta, atualiza o estado
+          if (response) {
+            window.captchaState.isReady = true;
+            window.captchaState.lastResponse = response;
+            return response;
+          }
           
-          // Retorna a primeira resposta válida
-          return response1 || response2 || null;
+          // Se não, tenta usar a última resposta salva
+          return window.captchaState.lastResponse || null;
         } catch (e) {
           console.error('Erro ao obter resposta:', e);
           return null;
@@ -2002,6 +1992,7 @@
           const nome = nomeInput?.value.trim() || '';
           const email = emailInput?.value.trim() || '';
 
+          // Validações
           if (!nome || !email) {
             showMessage('Preencha todos os campos!', 'error');
             return;
@@ -2012,19 +2003,19 @@
             return;
           }
 
-          // VERIFICAÇÃO DETALHADA DO CAPTCHA
-          console.log('🔍 Estado atual do captcha:', {
-            widgetId: window.captchaState.widgetId,
-            isReady: window.captchaState.isReady,
-            lastResponse: window.captchaState.lastResponse ? 'existe' : 'null'
-          });
-
+          // Verifica o captcha
+          console.log('🔍 Verificando captcha...');
+          
+          // Pequeno delay para garantir que o callback foi processado
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
           const captchaResponse = getCaptchaResponse();
           
           if (!captchaResponse) {
-            console.log('❌ Captcha não preenchido ou resposta vazia');
+            console.log('❌ Captcha não preenchido');
             showMessage('Por favor, confirme que você não é um robô', 'error');
             
+            // Tenta resetar o captcha
             if (window.captchaState.widgetId && typeof grecaptcha !== 'undefined') {
               grecaptcha.reset(window.captchaState.widgetId);
               window.captchaState.isReady = false;
@@ -2033,7 +2024,7 @@
             return;
           }
 
-          console.log('✅ Captcha OK, resposta obtida');
+          console.log('✅ Captcha OK');
           setLoading(true);
 
           try {
@@ -2085,12 +2076,6 @@
           } catch (error) {
             console.error('❌ Erro:', error);
             showMessage('✗ Ops! Algo deu errado. Tente novamente.', 'error');
-            
-            if (window.captchaState.widgetId && typeof grecaptcha !== 'undefined') {
-              grecaptcha.reset(window.captchaState.widgetId);
-              window.captchaState.isReady = false;
-              window.captchaState.lastResponse = null;
-            }
           } finally {
             setLoading(false);
           }
@@ -2099,28 +2084,30 @@
 
       // ===== MUTATION OBSERVER =====
       if (captchaContainer && window.MutationObserver) {
-        const observer = new MutationObserver((mutations) => {
-          mutations.forEach((mutation) => {
-            if (mutation.addedNodes.length > 0) {
-              console.log('✅ Captcha detectado no DOM');
-            }
-          });
+        const observer = new MutationObserver(() => {
+          if (captchaContainer.children.length > 0) {
+            console.log('✅ Captcha detectado no DOM');
+          }
         });
         observer.observe(captchaContainer, { childList: true });
       }
 
       // ===== DIAGNÓSTICO INICIAL =====
       setTimeout(() => {
+        const hasResponse = window.captchaState.widgetId ? 
+          grecaptcha?.getResponse(window.captchaState.widgetId) : null;
+          
         console.log('🔍 Diagnóstico completo:', {
           container: !!captchaContainer,
           filhos: captchaContainer?.children.length || 0,
           widgetId: window.captchaState.widgetId,
           isReady: window.captchaState.isReady,
+          hasResponse: !!hasResponse,
           grecaptcha: typeof grecaptcha !== 'undefined'
         });
-      }, 2000);
+      }, 3000);
 
-      console.log('✅ Sistema de formulário v5.4 carregado');
+      console.log('✅ Sistema de formulário v5.6 carregado');
     })();
   </script>
 </body>
